@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Visualisasi AR Sistem Pendengaran & Gelombang Bunyi</title>
+  
+  <!-- Library A-Frame untuk 3D Web -->
+  <script src="https://aframe.io/releases/1.2.0/aframe.min.js"></script>
+  <!-- Library AR.js untuk WebAR berbasis Marker -->
+  <script src="https://raw.githack.com/AR-js-org/AR.js/master/aframe/build/aframe-ar.js"></script>
+  
+  <style>
+    body {
+      margin: 0;
+      overflow: hidden;
+      font-family: Arial, sans-serif;
+    }
+    /* Panel Kontrol & Informasi Overlay */
+    #ui-container {
+      position: absolute;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      z-index: 1000;
+      background: rgba(0, 0, 0, 0.8);
+      color: white;
+      padding: 15px 20px;
+      border-radius: 12px;
+      text-align: center;
+      width: 85%;
+      max-width: 400px;
+      box-shadow: 0px 4px 10px rgba(0,0,0,0.5);
+    }
+    .slider-group {
+      margin: 10px 0;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    label {
+      font-size: 14px;
+    }
+    input[type=range] {
+      width: 60%;
+    }
+    #status-text {
+      font-size: 12px;
+      color: #00ffcc;
+      margin-top: 5px;
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- UI Overlay -->
+  <div id="ui-container">
+    <h3 style="margin: 0 0 10px 0; font-size: 16px;">Sistem Pendengaran & Gelombang</h3>
+    
+    <div class="slider-group">
+      <label for="freq">Frekuensi (Pitch):</label>
+      <input type="range" id="freq" min="1" max="5" value="2" step="0.5">
+    </div>
+    
+    <div class="slider-group">
+      <label for="amp">Amplitudo (Volume):</label>
+      <input type="range" id="amp" min="0.1" max="1" value="0.5" step="0.1">
+    </div>
+
+    <div id="status-text">Arahkan kamera ke Marker HIRO</div>
+  </div>
+
+  <!-- A-Frame AR Scene -->
+  <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;" vr-mode-ui="enabled: false">
+    
+    <!-- AR Marker Hiro -->
+    <a-marker preset="hiro">
+      
+      <!-- Container Utama Simulasi -->
+      <a-entity id="simulation" position="0 0 0" scale="0.6 0.6 0.6">
+        
+        <!-- 1. SUMBER BUNYI (Loudspeaker) -->
+        <a-entity id="speaker" position="-2.5 0 0">
+          <a-cylinder position="0 0 0" radius="0.3" height="0.4" rotation="0 0 90" color="#333333"></a-cylinder>
+          <a-cone position="0.3 0 0" radius-bottom="0.5" radius-top="0.2" height="0.4" rotation="0 0 -90" color="#555555"></a-cone>
+        </a-entity>
+
+        <!-- 2. GELOMBANG BUNYI (Visualisasi Partikel Rapatan & Renggangan) -->
+        <a-entity id="wave-container" position="-2 0 0"></a-entity>
+
+        <!-- 3. GENDANG TELINGA (Tympanic Membrane) -->
+        <a-entity id="eardrum" position="0 0 0">
+          <a-cylinder radius="0.6" height="0.05" rotation="0 0 90" color="#ff9999" opacity="0.8"></a-cylinder>
+          <a-text value="Gendang Telinga" position="0 0.8 0" align="center" scale="0.5 0.5 0.5" color="#ffffff"></a-text>
+        </a-entity>
+
+        <!-- 4. TULANG PENDENGARAN (Ossicles: Malleus, Incus, Stapes) -->
+        <a-entity id="ossicles" position="0.5 0 0">
+          <a-box id="malleus" position="0 0 0" width="0.4" height="0.1" depth="0.1" color="#e0c097"></a-box>
+          <a-box id="incus" position="0.3 0.1 0" width="0.3" height="0.1" depth="0.1" color="#d0b087"></a-box>
+          <a-box id="stapes" position="0.5 0 0" width="0.2" height="0.1" depth="0.1" color="#c0a077"></a-box>
+          <a-text value="Tulang Pendengaran" position="0.2 0.5 0" align="center" scale="0.4 0.4 0.4" color="#ffffff"></a-text>
+        </a-entity>
+
+        <!-- 5. KOKLEA (Cochlea / Rumah Siput) -->
+        <a-entity id="cochlea" position="1.6 0 0">
+          <a-torus radius="0.4" radius-tubes="0.15" arc="270" color="#ffcc99" rotation="90 0 0"></a-torus>
+          <a-torus radius="0.2" radius-tubes="0.1" arc="270" position="0 0.1 0" color="#ffbb88" rotation="90 0 0"></a-torus>
+          <a-text value="Koklea" position="0 0.7 0" align="center" scale="0.5 0.5 0.5" color="#ffffff"></a-text>
+        </a-entity>
+
+      </a-entity>
+
+    </a-marker>
+
+    <!-- Kamera AR -->
+    <a-entity camera></a-entity>
+
+  </a-scene>
+
+  <!-- Script Simulasi Matematika Gelombang & Getaran -->
+  <script>
+    const waveContainer = document.getElementById('wave-container');
+    const eardrum = document.getElementById('eardrum');
+    const ossicles = document.getElementById('ossicles');
+    const cochlea = document.getElementById('cochlea');
+
+    const freqInput = document.getElementById('freq');
+    const ampInput = document.getElementById('amp');
+
+    // Buat cincin-cincin gelombang bunyi
+    const numWaves = 6;
+    const waveRings = [];
+
+    for (let i = 0; i < numWaves; i++) {
+      let ring = document.createElement('a-ring');
+      ring.setAttribute('radius-inner', '0.05');
+      ring.setAttribute('radius-outer', '0.1');
+      ring.setAttribute('color', '#00e5ff');
+      ring.setAttribute('rotation', '0 90 0');
+      ring.setAttribute('opacity', '0.7');
+      waveContainer.appendChild(ring);
+      waveRings.push(ring);
+    }
+
+    let time = 0;
+
+    // Loop Animasi Utama
+    function animate() {
+      requestAnimationFrame(animate);
+      time += 0.05;
+
+      const frequency = parseFloat(freqInput.value);
+      const amplitude = parseFloat(ampInput.value);
+
+      // 1. Animasi Gelombang Merambat (Kiri ke Kanan)
+      waveRings.forEach((ring, index) => {
+        let xPos = ((time * frequency + (index * 0.3)) % 2);
+        ring.setAttribute('position', `${xPos} 0 0`);
+        let scale = 1 + (xPos * 0.5);
+        ring.setAttribute('scale', `${scale} ${scale} 1`);
+        ring.setAttribute('opacity', `${1 - (xPos / 2)}`);
+      });
+
+      // 2. Getaran Gendang Telinga (Respon terhadap gelombang)
+      let vibration = Math.sin(time * frequency * 5) * (amplitude * 0.15);
+      eardrum.setAttribute('position', `${vibration} 0 0`);
+
+      // 3. Getaran Tulang Pendengaran (Menyampaikan getaran)
+      ossicles.setAttribute('position', `${0.5 + vibration * 0.8} 0 0`);
+      ossicles.setAttribute('rotation', `0 0 ${vibration * 20}`);
+
+      // 4. Respon Koklea (Getaran cairan dalam koklea)
+      let cochleaScale = 1 + (Math.sin(time * frequency * 5) * amplitude * 0.05);
+      cochlea.setAttribute('scale', `${cochleaScale} ${cochleaScale} ${cochleaScale}`);
+    }
+
+    animate();
+  </script>
+</body>
+  </html>
