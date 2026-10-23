@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simulasi Interaktif 3D Sistem Pendengaran & Gelombang Bunyi</title>
+  <title>Simulasi Biofisika Sistem Pendengaran 3D</title>
   
   <!-- Library 3D Three.js & OrbitControls -->
   <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -19,7 +19,7 @@
     body {
       overflow: hidden;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #0b0f19;
+      background-color: #080c14;
       color: #e0e6ed;
     }
 
@@ -37,23 +37,23 @@
       top: 20px;
       left: 20px;
       z-index: 10;
-      background: rgba(15, 23, 42, 0.75);
+      background: rgba(15, 23, 42, 0.85);
       backdrop-filter: blur(10px);
       padding: 15px 25px;
       border-radius: 12px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(56, 189, 248, 0.3);
       pointer-events: none;
     }
 
     .header-overlay h1 {
-      font-size: 1.2rem;
+      font-size: 1.1rem;
       letter-spacing: 1px;
       color: #38bdf8;
       text-transform: uppercase;
     }
 
     .header-overlay p {
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       color: #94a3b8;
       margin-top: 4px;
     }
@@ -64,31 +64,31 @@
       right: 20px;
       z-index: 10;
       width: 320px;
-      background: rgba(15, 23, 42, 0.85);
+      background: rgba(15, 23, 42, 0.88);
       backdrop-filter: blur(12px);
       padding: 20px;
       border-radius: 16px;
       border: 1px solid rgba(255, 255, 255, 0.1);
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.5);
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.6);
     }
 
     .control-panel h2 {
-      font-size: 1rem;
+      font-size: 0.95rem;
       color: #f8fafc;
-      margin-bottom: 15px;
-      padding-bottom: 8px;
+      margin-bottom: 12px;
+      padding-bottom: 6px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     .control-group {
-      margin-bottom: 15px;
+      margin-bottom: 12px;
     }
 
     .label-row {
       display: flex;
       justify-content: space-between;
-      font-size: 0.85rem;
-      margin-bottom: 6px;
+      font-size: 0.8rem;
+      margin-bottom: 4px;
       color: #cbd5e1;
     }
 
@@ -106,16 +106,16 @@
     .btn-group {
       display: flex;
       gap: 10px;
-      margin-top: 15px;
+      margin-top: 12px;
     }
 
     .btn {
       flex: 1;
-      padding: 10px;
+      padding: 8px 10px;
       border: none;
       border-radius: 8px;
       font-weight: 600;
-      font-size: 0.8rem;
+      font-size: 0.78rem;
       cursor: pointer;
       transition: all 0.2s ease;
     }
@@ -142,29 +142,45 @@
       border: none;
       height: 1px;
       background: rgba(255, 255, 255, 0.1);
-      margin: 15px 0;
+      margin: 12px 0;
     }
 
     .info-card h3 {
-      font-size: 0.9rem;
+      font-size: 0.85rem;
       color: #38bdf8;
-      margin-bottom: 6px;
+      margin-bottom: 5px;
     }
 
     .info-card p {
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       line-height: 1.4;
       color: #94a3b8;
+    }
+
+    /* Label 3D CSS HTML Overlay */
+    .annotation-label {
+      position: absolute;
+      color: #00f2ff;
+      font-size: 11px;
+      font-weight: bold;
+      background: rgba(8, 12, 20, 0.75);
+      padding: 3px 7px;
+      border-radius: 4px;
+      border: 1px solid rgba(0, 242, 255, 0.4);
+      pointer-events: none;
+      transform: translate(-50%, -100%);
+      white-space: nowrap;
+      transition: opacity 0.3s;
     }
 
     @media (max-width: 600px) {
       .control-panel {
         top: auto;
-        bottom: 20px;
+        bottom: 15px;
         right: 50%;
         transform: translateX(50%);
-        width: 90%;
-        max-height: 45vh;
+        width: 92%;
+        max-height: 40vh;
         overflow-y: auto;
       }
       .header-overlay {
@@ -180,10 +196,13 @@
   <!-- Kanvas 3D -->
   <div id="canvas-container"></div>
 
+  <!-- Container Label Anatomi -->
+  <div id="labels-container"></div>
+
   <!-- Header Judul -->
   <header class="header-overlay">
-    <h1>SIMULASI SISTEM PENDENGARAN 3D</h1>
-    <p>Visualisasi Gelombang Bunyi & Transduksi Mekanik Telinga</p>
+    <h1>SIMULASI BIOFISIKA PENDENGARAN</h1>
+    <p>Konversi Gelombang Mekanik Bunyi menjadi Impuls Saraf Biologis</p>
   </header>
 
   <!-- Control Panel Sidebar -->
@@ -192,7 +211,7 @@
     
     <div class="control-group">
       <div class="label-row">
-        <label for="freq">Frekuensi (Pitch)</label>
+        <label for="freq">Frekuensi (Pitch / Tinggi Nada)</label>
         <span id="freq-val" class="value-display">2.0 Hz</span>
       </div>
       <input type="range" id="freq" min="0.5" max="5" value="2" step="0.1">
@@ -200,44 +219,44 @@
 
     <div class="control-group">
       <div class="label-row">
-        <label for="amp">Amplitudo (Volume)</label>
-        <span id="amp-val" class="value-display">0.5</span>
+        <label for="amp">Amplitudo (Kuat Bunyi / Tekanan)</label>
+        <span id="amp-val" class="value-display">0.50</span>
       </div>
       <input type="range" id="amp" min="0.1" max="1" value="0.5" step="0.05">
     </div>
 
     <div class="control-group">
       <div class="label-row">
-        <label for="speed">Kecepatan Gelombang</label>
+        <label for="speed">Kecepatan Rambat Gelombang</label>
         <span id="speed-val" class="value-display">1.0x</span>
       </div>
       <input type="range" id="speed" min="0.2" max="3" value="1" step="0.1">
     </div>
 
     <div class="btn-group">
-      <button id="btn-toggle-sound" class="btn btn-audio">🔊 Suara: ON</button>
+      <button id="btn-toggle-sound" class="btn btn-audio">🔊 Audio: ON</button>
       <button id="btn-reset" class="btn btn-secondary">↺ Reset Kamera</button>
     </div>
 
     <hr>
 
     <div class="info-card">
-      <h3 id="info-title">Sistem Pendengaran</h3>
-      <p id="info-desc">Putar, geser, dan zoom model 3D menggunakan mouse atau layar sentuh. Geser slider di atas untuk melihat bagaimana perubahan frekuensi dan amplitudo memengaruhi getaran gendang telinga, tulang pendengaran, dan sel rambut koklea.</p>
+      <h3 id="info-title">Proses Transduksi Biofisika</h3>
+      <p id="info-desc">Gelombang bunyi (getaran molekul udara) dikumpulkan oleh <b>Daun Telinga</b>, masuk ke <b>Saluran Telinga</b>, menggetarkan <b>Gendang Telinga</b>, diamplifikasi oleh <b>3 Tulang Pendengaran</b>, lalu menggetarkan cairan <b>Koklea</b> untuk merangsang sel rambut mengirim sinyal listrik melalui <b>Saraf Auditori</b> ke otak.</p>
     </div>
   </div>
 
-  <!-- Script Aplikasi -->
   <script>
     let scene, camera, renderer, controls;
     let waveRings = [], hairCells = [];
-    let eardrumMesh, malleusMesh, incusMesh, stapesMesh, cochleaMesh, speakerConeMesh;
+    let eardrumMesh, malleusMesh, incusMesh, stapesMesh, cochleaMesh, speakerConeMesh, auditoryNerveMesh;
+    let annotations = [];
 
-    // Audio Synth
+    // Audio Context
     let audioCtx, oscillator, gainNode;
     let isAudioActive = true;
 
-    // Parameter awal
+    // Parameter Gelombang
     let params = {
       freq: 2.0,
       amp: 0.5,
@@ -255,20 +274,21 @@
 
     const btnAudio = document.getElementById('btn-toggle-sound');
     const btnReset = document.getElementById('btn-reset');
+    const labelsContainer = document.getElementById('labels-container');
 
     function init() {
       const container = document.getElementById('canvas-container');
 
-      // 1. Scene setup
+      // 1. Scene
       scene = new THREE.Scene();
-      scene.background = new THREE.Color(0x0b0f19);
-      scene.fog = new THREE.FogExp2(0x0b0f19, 0.03);
+      scene.background = new THREE.Color(0x080c14);
+      scene.fog = new THREE.FogExp2(0x080c14, 0.025);
 
-      // 2. Camera setup
+      // 2. Camera
       camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-      camera.position.set(0, 3, 11);
+      camera.position.set(0, 3.5, 12);
 
-      // 3. Renderer setup
+      // 3. Renderer
       renderer = new THREE.WebGLRenderer({ antialias: true });
       renderer.setSize(window.innerWidth, window.innerHeight);
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -279,53 +299,53 @@
       controls = new THREE.OrbitControls(camera, renderer.domElement);
       controls.enableDamping = true;
       controls.dampingFactor = 0.05;
-      controls.maxDistance = 20;
+      controls.maxDistance = 22;
       controls.minDistance = 3;
 
-      // 5. Lighting
-      const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+      // 5. Pencahayaan
+      const ambientLight = new THREE.AmbientLight(0xffffff, 0.65);
       scene.add(ambientLight);
 
       const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
       dirLight.position.set(5, 10, 7);
-      dirLight.castShadow = true;
       scene.add(dirLight);
 
-      const bluePointLight = new THREE.PointLight(0x38bdf8, 1.5, 10);
-      bluePointLight.position.set(-3, 1, 2);
-      scene.add(bluePointLight);
+      const pointLight = new THREE.PointLight(0x38bdf8, 1.2, 12);
+      pointLight.position.set(-4, 2, 2);
+      scene.add(pointLight);
 
-      // Grid Helper
-      const grid = new THREE.GridHelper(20, 20, 0x1e293b, 0x0f172a);
-      grid.position.y = -2;
+      // Floor Grid
+      const grid = new THREE.GridHelper(24, 24, 0x1e293b, 0x0f172a);
+      grid.position.y = -2.5;
       scene.add(grid);
 
-      // Build 3D Models
-      buildModels();
+      // Build Models
+      buildAnatomyAndWave();
 
-      // Initialize Web Audio API
+      // Audio
       initAudio();
 
-      // Event Listeners
+      // Events
       window.addEventListener('resize', onWindowResize);
       setupUI();
 
-      // Start Animation Loop
       animate();
     }
 
-    function buildModels() {
-      // A. Speaker (Sumber Bunyi) - Position X: -4.5
+    function buildAnatomyAndWave() {
+      // -------------------------------------------------------------
+      // A. SUMBER BUNYI (Loudspeaker / Garu Tala) - X = -5.5
+      // -------------------------------------------------------------
       const speakerGroup = new THREE.Group();
-      speakerGroup.position.set(-4.5, 0, 0);
+      speakerGroup.position.set(-5.5, 0, 0);
 
-      const bodyGeo = new THREE.CylinderGeometry(0.6, 0.8, 1, 32);
+      const bodyGeo = new THREE.CylinderGeometry(0.6, 0.85, 1, 32);
       const bodyMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.3 });
       const bodyMesh = new THREE.Mesh(bodyGeo, bodyMat);
       bodyMesh.rotation.z = -Math.PI / 2;
       speakerGroup.add(bodyMesh);
 
-      const coneGeo = new THREE.ConeGeometry(0.7, 0.5, 32, 1, true);
+      const coneGeo = new THREE.ConeGeometry(0.75, 0.5, 32, 1, true);
       const coneMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, side: THREE.DoubleSide });
       speakerConeMesh = new THREE.Mesh(coneGeo, coneMat);
       speakerConeMesh.rotation.z = -Math.PI / 2;
@@ -333,82 +353,186 @@
       speakerGroup.add(speakerConeMesh);
 
       scene.add(speakerGroup);
+      addAnnotation(-5.5, 1.2, 0, "Sumber Bunyi (Getaran)");
 
-      // B. Gelombang Bunyi (Sound Waves) - Between X: -3.8 and -1.0
-      const numRings = 12;
+      // -------------------------------------------------------------
+      // B. GELOMBANG BUNYI (Rapatan & Renggangan Udara)
+      // -------------------------------------------------------------
+      const numRings = 14;
       for (let i = 0; i < numRings; i++) {
-        const ringGeo = new THREE.TorusGeometry(0.6, 0.02, 16, 50);
+        const ringGeo = new THREE.TorusGeometry(0.55, 0.02, 16, 40);
         const ringMat = new THREE.MeshBasicMaterial({
           color: 0x38bdf8,
           transparent: true,
-          opacity: 0.7
+          opacity: 0.65
         });
         const ring = new THREE.Mesh(ringGeo, ringMat);
         ring.rotation.y = Math.PI / 2;
-        ring.position.x = -3.8 + (i * 0.23);
+        ring.position.x = -4.8 + (i * 0.22);
         scene.add(ring);
         waveRings.push(ring);
       }
+      addAnnotation(-3.5, 1.0, 0, "Gelombang Bunyi (Tekanan Udara)");
 
-      // C. Gendang Telinga (Tympanic Membrane) - Position X: -0.8
-      const eardrumGeo = new THREE.CylinderGeometry(0.8, 0.8, 0.05, 32);
+      // -------------------------------------------------------------
+      // C. TELINGA LUAR: Daun Telinga (Pinna) & Saluran Telinga - X = -1.8
+      // -------------------------------------------------------------
+      const earGroup = new THREE.Group();
+      earGroup.position.set(-1.8, 0, 0);
+
+      // Daun Telinga (Pinna)
+      const pinnaShape = new THREE.Shape();
+      pinnaShape.moveTo(0, -1.2);
+      pinnaShape.quadraticCurveTo(-0.8, -0.5, -0.6, 0.5);
+      pinnaShape.quadraticCurveTo(-0.3, 1.3, 0.3, 1.2);
+      pinnaShape.quadraticCurveTo(0.8, 0.8, 0.5, 0);
+      pinnaShape.quadraticCurveTo(0.2, -0.8, 0, -1.2);
+
+      const extrudeSettings = { depth: 0.15, bevelEnabled: true, bevelSegments: 3, steps: 1, bevelSize: 0.05, bevelThickness: 0.05 };
+      const pinnaGeo = new THREE.ExtrudeGeometry(pinnaShape, extrudeSettings);
+      const skinMat = new THREE.MeshStandardMaterial({ color: 0xfca5a5, roughness: 0.5 });
+      const pinnaMesh = new THREE.Mesh(pinnaGeo, skinMat);
+      pinnaMesh.position.set(-0.3, 0, 0);
+      pinnaMesh.scale.set(0.85, 0.85, 0.85);
+      earGroup.add(pinnaMesh);
+
+      // Saluran Telinga / Ear Canal (Transparan)
+      const canalGeo = new THREE.CylinderGeometry(0.5, 0.45, 1.2, 32, 1, true);
+      const canalMat = new THREE.MeshStandardMaterial({
+        color: 0xfca5a5,
+        transparent: true,
+        opacity: 0.35,
+        side: THREE.DoubleSide
+      });
+      const canalMesh = new THREE.Mesh(canalGeo, canalMat);
+      canalMesh.rotation.z = Math.PI / 2;
+      canalMesh.position.set(0.6, 0, 0);
+      earGroup.add(canalMesh);
+
+      scene.add(earGroup);
+      addAnnotation(-2.1, 1.4, 0, "Daun Telinga (Pinna)");
+      addAnnotation(-1.2, 0.8, 0, "Saluran Telinga");
+
+      // -------------------------------------------------------------
+      // D. TELINGA TENGAH: Gendang Telinga (Tympanic Membrane) - X = -0.6
+      // -------------------------------------------------------------
+      const eardrumGeo = new THREE.CylinderGeometry(0.55, 0.55, 0.04, 32);
       const eardrumMat = new THREE.MeshStandardMaterial({
         color: 0xf43f5e,
         transparent: true,
-        opacity: 0.75,
+        opacity: 0.8,
         roughness: 0.2
       });
       eardrumMesh = new THREE.Mesh(eardrumGeo, eardrumMat);
-      eardrumMesh.position.set(-0.8, 0, 0);
+      eardrumMesh.position.set(-0.6, 0, 0);
       eardrumMesh.rotation.z = Math.PI / 2;
       scene.add(eardrumMesh);
+      addAnnotation(-0.6, 1.0, 0, "Gendang Telinga (Membran)");
 
-      // D. Tulang Pendengaran (Ossicles) - Position X: -0.5 to 1.0
+      // -------------------------------------------------------------
+      // E. TULANG PENDENGARAN (Ossicles: Malleus, Incus, Stapes) - X = -0.3 s/d 0.8
+      // -------------------------------------------------------------
       const ossiclesGroup = new THREE.Group();
 
-      // Malleus (Martil)
-      const malleusGeo = new THREE.BoxGeometry(0.5, 0.12, 0.12);
       const boneMat = new THREE.MeshStandardMaterial({ color: 0xfde047, roughness: 0.4 });
+
+      // Malleus (Martil)
+      const malleusGeo = new THREE.CylinderGeometry(0.06, 0.08, 0.6, 16);
       malleusMesh = new THREE.Mesh(malleusGeo, boneMat);
-      malleusMesh.position.set(-0.5, 0, 0);
+      malleusMesh.position.set(-0.35, -0.05, 0);
+      malleusMesh.rotation.z = -Math.PI / 4;
       ossiclesGroup.add(malleusMesh);
 
       // Incus (Landasan)
-      const incusGeo = new THREE.BoxGeometry(0.4, 0.15, 0.12);
+      const incusGeo = new THREE.BoxGeometry(0.3, 0.2, 0.15);
       incusMesh = new THREE.Mesh(incusGeo, boneMat);
-      incusMesh.position.set(-0.1, 0.1, 0);
+      incusMesh.position.set(-0.1, 0.15, 0);
       ossiclesGroup.add(incusMesh);
 
       // Stapes (Sanggurdi)
-      const stapesGeo = new THREE.TorusGeometry(0.12, 0.04, 8, 16);
+      const stapesGeo = new THREE.TorusGeometry(0.12, 0.04, 12, 24);
       stapesMesh = new THREE.Mesh(stapesGeo, boneMat);
-      stapesMesh.position.set(0.25, 0, 0);
+      stapesMesh.position.set(0.2, 0, 0);
       stapesMesh.rotation.y = Math.PI / 2;
       ossiclesGroup.add(stapesMesh);
 
       scene.add(ossiclesGroup);
+      addAnnotation(0.0, 0.9, 0, "Tulang Pendengaran (Amplifikasi)");
 
-      // E. Koklea (Cochlea) - Position X: 1.8
-      const cochleaGroup = new THREE.Group();
-      cochleaGroup.position.set(1.8, 0, 0);
+      // -------------------------------------------------------------
+      // F. TELINGA DALAM: Koklea & Saraf Auditori - X = 1.2 s/d 3.5
+      // -------------------------------------------------------------
+      const innerEarGroup = new THREE.Group();
+      innerEarGroup.position.set(1.4, 0, 0);
 
-      const spiralGeo = new THREE.TorusGeometry(0.7, 0.2, 16, 50, Math.PI * 2.5);
-      const cochleaMat = new THREE.MeshStandardMaterial({ color: 0xa855f7, roughness: 0.3 });
+      // Koklea (Rumah Siput Spiral)
+      const spiralGeo = new THREE.TorusGeometry(0.65, 0.18, 16, 60, Math.PI * 2.7);
+      const cochleaMat = new THREE.MeshStandardMaterial({ color: 0xc084fc, roughness: 0.3 });
       cochleaMesh = new THREE.Mesh(spiralGeo, cochleaMat);
       cochleaMesh.rotation.x = Math.PI / 2;
-      cochleaGroup.add(cochleaMesh);
+      innerEarGroup.add(cochleaMesh);
 
-      // Sel Rambut dalam Koklea (Hair Cells Visualizer)
-      for (let i = 0; i < 8; i++) {
-        const hairGeo = new THREE.CylinderGeometry(0.015, 0.015, 0.4, 8);
-        const hairMat = new THREE.MeshBasicMaterial({ color: 0x22c55e });
+      // Saluran Setengah Lingkaran (Semicircular Canals - Keseimbangan)
+      const canalRingGeo = new THREE.TorusGeometry(0.4, 0.06, 12, 24, Math.PI * 1.5);
+      const canalInnerMat = new THREE.MeshStandardMaterial({ color: 0xe9d5ff });
+      const canal1 = new THREE.Mesh(canalRingGeo, canalInnerMat);
+      canal1.position.set(-0.1, 0.6, 0);
+      innerEarGroup.add(canal1);
+
+      // Sel Rambut Auditori (Sensori Bio-Listrik)
+      for (let i = 0; i < 9; i++) {
+        const hairGeo = new THREE.CylinderGeometry(0.012, 0.012, 0.35, 8);
+        const hairMat = new THREE.MeshBasicMaterial({ color: 0x4ade80 });
         const hair = new THREE.Mesh(hairGeo, hairMat);
-        hair.position.set((i * 0.08) - 0.3, 0.2, 0);
-        cochleaGroup.add(hair);
+        hair.position.set((i * 0.07) - 0.3, 0.18, 0);
+        innerEarGroup.add(hair);
         hairCells.push(hair);
       }
 
-      scene.add(cochleaGroup);
+      // Saraf Auditori (Auditory Nerve ke Otak)
+      const nerveGeo = new THREE.CylinderGeometry(0.1, 0.14, 1.4, 16);
+      const nerveMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, roughness: 0.5 });
+      auditoryNerveMesh = new THREE.Mesh(nerveGeo, nerveMat);
+      auditoryNerveMesh.rotation.z = -Math.PI / 2;
+      auditoryNerveMesh.position.set(1.2, 0, 0);
+      innerEarGroup.add(auditoryNerveMesh);
+
+      scene.add(innerEarGroup);
+
+      addAnnotation(1.2, 1.1, 0, "Koklea (Transduksi Cairan)");
+      addAnnotation(2.6, 0.6, 0, "Saraf Auditori (Impuls ke Otak)");
+    }
+
+    function addAnnotation(x, y, z, text) {
+      const div = document.createElement('div');
+      div.className = 'annotation-label';
+      div.textContent = text;
+      labelsContainer.appendChild(div);
+
+      annotations.push({
+        element: div,
+        pos: new THREE.Vector3(x, y, z)
+      });
+    }
+
+    function updateAnnotations() {
+      annotations.forEach(ann => {
+        const vector = ann.pos.clone();
+        vector.project(camera);
+
+        // Map to 2D Screen
+        const x = (vector.x * 0.5 + 0.5) * window.innerWidth;
+        const y = (-(vector.y * 0.5) + 0.5) * window.innerHeight;
+
+        // Disembunyikan jika di belakang kamera
+        if (vector.z > 1) {
+          ann.element.style.opacity = 0;
+        } else {
+          ann.element.style.opacity = 1;
+          ann.element.style.left = `${x}px`;
+          ann.element.style.top = `${y}px`;
+        }
+      });
     }
 
     function initAudio() {
@@ -429,10 +553,10 @@
     function updateAudioParameters() {
       if (!audioCtx) return;
       
-      const audioFreq = 150 + (params.freq * 130);
+      const audioFreq = 140 + (params.freq * 120);
       oscillator.frequency.setTargetAtTime(audioFreq, audioCtx.currentTime, 0.05);
 
-      const gainValue = isAudioActive ? params.amp * 0.15 : 0;
+      const gainValue = isAudioActive ? params.amp * 0.12 : 0;
       gainNode.gain.setTargetAtTime(gainValue, audioCtx.currentTime, 0.05);
     }
 
@@ -459,13 +583,13 @@
           audioCtx.resume();
         }
         isAudioActive = !isAudioActive;
-        btnAudio.textContent = isAudioActive ? '🔊 Suara: ON' : '🔇 Suara: OFF';
+        btnAudio.textContent = isAudioActive ? '🔊 Audio: ON' : '🔇 Audio: OFF';
         btnAudio.style.background = isAudioActive ? '#0284c7' : '#475569';
         updateAudioParameters();
       });
 
       btnReset.addEventListener('click', () => {
-        camera.position.set(0, 3, 11);
+        camera.position.set(0, 3.5, 12);
         controls.reset();
       });
     }
@@ -483,47 +607,21 @@
 
       time += 0.03 * params.speed * params.freq;
 
-      // 1. Animasi Speaker Cone
-      const speakerVibe = Math.sin(time * 5) * params.amp * 0.1;
+      // 1. Getaran Speaker Cone
+      const speakerVibe = Math.sin(time * 5) * params.amp * 0.08;
       if (speakerConeMesh) {
         speakerConeMesh.position.x = 0.5 + speakerVibe;
       }
 
-      // 2. Animasi Gelombang Merambat
+      // 2. Merambatnya Gelombang Bunyi
       waveRings.forEach((ring, index) => {
-        const wavePhase = time * 3 - (index * 0.4);
-        const scale = 1 + (Math.sin(wavePhase) * params.amp * 0.25);
+        const wavePhase = time * 3 - (index * 0.35);
+        const scale = 1 + (Math.sin(wavePhase) * params.amp * 0.2);
         ring.scale.set(scale, scale, 1);
 
-        const opacity = 0.3 + (Math.sin(wavePhase) * 0.4);
+        const opacity = 0.25 + (Math.sin(wavePhase) * 0.45);
         ring.material.opacity = Math.max(0.1, opacity);
       });
 
-      // 3. Getaran Gendang Telinga
-      const eardrumVibe = Math.sin(time * 3 - 2.5) * params.amp * 0.12;
-      if (eardrumMesh) {
-        eardrumMesh.position.x = -0.8 + eardrumVibe;
-      }
-
-      // 4. Gerakan Tulang Pendengaran (Ossicles)
-      if (malleusMesh && incusMesh && stapesMesh) {
-        malleusMesh.position.x = -0.5 + (eardrumVibe * 0.9);
-        incusMesh.position.x = -0.1 + (eardrumVibe * 0.8);
-        incusMesh.rotation.z = eardrumVibe * 0.5;
-        stapesMesh.position.x = 0.25 + (eardrumVibe * 0.7);
-      }
-
-      // 5. Animasi Sel Rambut Koklea
-      hairCells.forEach((hair, index) => {
-        const hairWave = Math.sin(time * 3 - (index * 0.3)) * params.amp * 0.3;
-        hair.rotation.z = hairWave;
-      });
-
-      controls.update();
-      renderer.render(scene, camera);
-    }
-
-    window.onload = init;
-  </script>
-</body>
-</html>
+      // 3. Getaran Gendang Telinga (Mekanis)
+      const eardrumVibe = Math.sin(time
