@@ -624,4 +624,37 @@
       });
 
       // 3. Getaran Gendang Telinga (Mekanis)
-      const eardrumVibe = Math.sin(time
+      const eardrumVibe = Math.sin(time * 3 - 2.8) * params.amp * 0.1;
+      if (eardrumMesh) {
+        eardrumMesh.position.x = -0.6 + eardrumVibe;
+      }
+
+      // 4. Gerakan Tulang Pendengaran (Tuas Mekanis)
+      if (malleusMesh && incusMesh && stapesMesh) {
+        malleusMesh.position.x = -0.35 + (eardrumVibe * 0.8);
+        incusMesh.position.x = -0.1 + (eardrumVibe * 0.7);
+        incusMesh.rotation.z = eardrumVibe * 0.4;
+        stapesMesh.position.x = 0.2 + (eardrumVibe * 0.6);
+      }
+
+      // 5. Getaran Sel Rambut Koklea (Sinyal Bio-Listrik)
+      hairCells.forEach((hair, index) => {
+        const hairWave = Math.sin(time * 3 - (index * 0.25)) * params.amp * 0.35;
+        hair.rotation.z = hairWave;
+      });
+
+      // 6. Pulsa Saraf Auditori
+      if (auditoryNerveMesh) {
+        const pulse = 1 + Math.sin(time * 4) * 0.05 * params.amp;
+        auditoryNerveMesh.scale.set(pulse, 1, pulse);
+      }
+
+      controls.update();
+      updateAnnotations();
+      renderer.render(scene, camera);
+    }
+
+    window.onload = init;
+  </script>
+</body>
+</html>
