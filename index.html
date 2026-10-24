@@ -1,635 +1,326 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="dark">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Simulasi Biofisika Sistem Pendengaran 3D</title>
-  
-  <!-- Library 3D Three.js & OrbitControls -->
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulasi Interaktif Sistem Pendengaran & Gelombang Bunyi</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        cyber: {
+                            bg: '#0a0f1d',
+                            card: '#12192c',
+                            border: '#1e293b',
+                            cyan: '#06b6d4',
+                            magenta: '#ec4899',
+                            yellow: '#eab308',
+                            green: '#10b981'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0a0f1d;
+            color: #f1f5f9;
+        }
 
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0a0f1d;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1e293b;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #334155;
+        }
 
-    body {
-      overflow: hidden;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #080c14;
-      color: #e0e6ed;
-    }
+        /* SVG Interactive Elements Styling */
+        .ear-part {
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .ear-part:hover {
+            filter: drop-shadow(0 0 10px rgba(6, 182, 212, 0.9));
+            opacity: 0.95;
+        }
+        .ear-part.active {
+            filter: drop-shadow(0 0 16px rgba(236, 72, 153, 1));
+        }
 
-    #canvas-container {
-      width: 100vw;
-      height: 100vh;
-      position: absolute;
-      top: 0;
-      left: 0;
-      z-index: 1;
-    }
-
-    .header-overlay {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      z-index: 10;
-      background: rgba(15, 23, 42, 0.85);
-      backdrop-filter: blur(10px);
-      padding: 15px 25px;
-      border-radius: 12px;
-      border: 1px solid rgba(56, 189, 248, 0.3);
-      pointer-events: none;
-    }
-
-    .header-overlay h1 {
-      font-size: 1.1rem;
-      letter-spacing: 1px;
-      color: #38bdf8;
-      text-transform: uppercase;
-    }
-
-    .header-overlay p {
-      font-size: 0.78rem;
-      color: #94a3b8;
-      margin-top: 4px;
-    }
-
-    .control-panel {
-      position: absolute;
-      top: 20px;
-      right: 20px;
-      z-index: 10;
-      width: 320px;
-      background: rgba(15, 23, 42, 0.88);
-      backdrop-filter: blur(12px);
-      padding: 20px;
-      border-radius: 16px;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.6);
-    }
-
-    .control-panel h2 {
-      font-size: 0.95rem;
-      color: #f8fafc;
-      margin-bottom: 12px;
-      padding-bottom: 6px;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-    }
-
-    .control-group {
-      margin-bottom: 12px;
-    }
-
-    .label-row {
-      display: flex;
-      justify-content: space-between;
-      font-size: 0.8rem;
-      margin-bottom: 4px;
-      color: #cbd5e1;
-    }
-
-    .value-display {
-      color: #38bdf8;
-      font-weight: 600;
-    }
-
-    input[type=range] {
-      width: 100%;
-      accent-color: #38bdf8;
-      cursor: pointer;
-    }
-
-    .btn-group {
-      display: flex;
-      gap: 10px;
-      margin-top: 12px;
-    }
-
-    .btn {
-      flex: 1;
-      padding: 8px 10px;
-      border: none;
-      border-radius: 8px;
-      font-weight: 600;
-      font-size: 0.78rem;
-      cursor: pointer;
-      transition: all 0.2s ease;
-    }
-
-    .btn-audio {
-      background: #0284c7;
-      color: #fff;
-    }
-
-    .btn-audio:hover {
-      background: #0369a1;
-    }
-
-    .btn-secondary {
-      background: #334155;
-      color: #f8fafc;
-    }
-
-    .btn-secondary:hover {
-      background: #475569;
-    }
-
-    hr {
-      border: none;
-      height: 1px;
-      background: rgba(255, 255, 255, 0.1);
-      margin: 12px 0;
-    }
-
-    .info-card h3 {
-      font-size: 0.85rem;
-      color: #38bdf8;
-      margin-bottom: 5px;
-    }
-
-    .info-card p {
-      font-size: 0.75rem;
-      line-height: 1.4;
-      color: #94a3b8;
-    }
-
-    /* Label 3D CSS Overlay */
-    .annotation-label {
-      position: absolute;
-      color: #00f2ff;
-      font-size: 11px;
-      font-weight: bold;
-      background: rgba(8, 12, 20, 0.85);
-      padding: 4px 8px;
-      border-radius: 6px;
-      border: 1px solid rgba(0, 242, 255, 0.5);
-      pointer-events: none;
-      transform: translate(-50%, -100%);
-      white-space: nowrap;
-      transition: opacity 0.3s;
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5);
-    }
-
-    @media (max-width: 600px) {
-      .control-panel {
-        top: auto;
-        bottom: 15px;
-        right: 50%;
-        transform: translateX(50%);
-        width: 92%;
-        max-height: 40vh;
-        overflow-y: auto;
-      }
-      .header-overlay {
-        top: 10px;
-        left: 10px;
-        right: 10px;
-      }
-    }
-  </style>
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 1; }
+        }
+        .glow-effect {
+            animation: pulse-glow 1.5s infinite;
+        }
+    </style>
 </head>
-<body>
-
-  <!-- Kanvas 3D -->
-  <div id="canvas-container"></div>
-
-  <!-- Container Label Anatomi -->
-  <div id="labels-container"></div>
-
-  <!-- Header Judul -->
-  <header class="header-overlay">
-    <h1>SIMULASI BIOFISIKA PENDENGARAN</h1>
-    <p>Visualisasi Anatomi Telinga & Transduksi Gelombang Bunyi</p>
-  </header>
-
-  <!-- Control Panel Sidebar -->
-  <div class="control-panel">
-    <h2>Kontrol Gelombang Bunyi</h2>
-    
-    <div class="control-group">
-      <div class="label-row">
-        <label for="freq">Frekuensi (Pitch / Tinggi Nada)</label>
-        <span id="freq-val" class="value-display">2.0 Hz</span>
-      </div>
-      <input type="range" id="freq" min="0.5" max="5" value="2" step="0.1">
-    </div>
-
-    <div class="control-group">
-      <div class="label-row">
-        <label for="amp">Amplitudo (Kuat Bunyi / Tekanan)</label>
-        <span id="amp-val" class="value-display">0.50</span>
-      </div>
-      <input type="range" id="amp" min="0.1" max="1" value="0.5" step="0.05">
-    </div>
-
-    <div class="control-group">
-      <div class="label-row">
-        <label for="speed">Kecepatan Rambat Gelombang</label>
-        <span id="speed-val" class="value-display">1.0x</span>
-      </div>
-      <input type="range" id="speed" min="0.2" max="3" value="1" step="0.1">
-    </div>
-
-    <div class="btn-group">
-      <button id="btn-toggle-sound" class="btn btn-audio">🔊 Audio: ON</button>
-      <button id="btn-reset" class="btn btn-secondary">↺ Reset Kamera</button>
-    </div>
-
-    <hr>
-
-    <div class="info-card">
-      <h3 id="info-title">Proses Transduksi Biofisika</h3>
-      <p id="info-desc">Gelombang bunyi dirambatkan dari sumber bunyi, ditangkap oleh <b>Daun Telinga</b>, diteruskan melalui <b>Saluran Telinga</b> menuju <b>Gendang Telinga</b>, diamplifikasi oleh <b>3 Tulang Pendengaran</b>, lalu menggetarkan cairan dalam <b>Koklea</b> untuk memicu impuls saraf ke otak.</p>
-    </div>
-  </div>
-
-  <script>
-    let scene, camera, renderer, controls;
-    let waveRings = [], hairCells = [];
-    let eardrumMesh, malleusMesh, incusMesh, stapesMesh, cochleaMesh, speakerConeMesh, auditoryNerveMesh;
-    let annotations = [];
-
-    // Audio Context
-    let audioCtx, oscillator, gainNode;
-    let isAudioActive = true;
-
-    // Parameter Gelombang
-    let params = {
-      freq: 2.0,
-      amp: 0.5,
-      speed: 1.0
-    };
-
-    // UI Elements
-    const freqInput = document.getElementById('freq');
-    const ampInput = document.getElementById('amp');
-    const speedInput = document.getElementById('speed');
-
-    const freqVal = document.getElementById('freq-val');
-    const ampVal = document.getElementById('amp-val');
-    const speedVal = document.getElementById('speed-val');
-
-    const btnAudio = document.getElementById('btn-toggle-sound');
-    const btnReset = document.getElementById('btn-reset');
-    const labelsContainer = document.getElementById('labels-container');
-
-    function init() {
-      const container = document.getElementById('canvas-container');
-
-      // 1. Scene
-      scene = new THREE.Scene();
-      scene.background = new THREE.Color(0x080c14);
-      scene.fog = new THREE.FogExp2(0x080c14, 0.02);
-
-      // 2. Camera
-      camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 1000);
-      camera.position.set(0, 3.5, 13);
-
-      // 3. Renderer
-      renderer = new THREE.WebGLRenderer({ antialias: true });
-      renderer.setSize(window.innerWidth, window.innerHeight);
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-      renderer.shadowMap.enabled = true;
-      container.appendChild(renderer.domElement);
-
-      // 4. Orbit Controls
-      controls = new THREE.OrbitControls(camera, renderer.domElement);
-      controls.enableDamping = true;
-      controls.dampingFactor = 0.05;
-      controls.maxDistance = 24;
-      controls.minDistance = 3;
-
-      // 5. Pencahayaan
-      const ambientLight = new THREE.AmbientLight(0xffffff, 0.7);
-      scene.add(ambientLight);
-
-      const dirLight = new THREE.DirectionalLight(0xffffff, 0.9);
-      dirLight.position.set(5, 10, 7);
-      scene.add(dirLight);
-
-      const pointLight = new THREE.PointLight(0x38bdf8, 1.5, 15);
-      pointLight.position.set(-5, 2, 2);
-      scene.add(pointLight);
-
-      // Floor Grid
-      const grid = new THREE.GridHelper(26, 26, 0x1e293b, 0x0f172a);
-      grid.position.y = -2.8;
-      scene.add(grid);
-
-      // Build Models
-      buildAnatomyAndWave();
-
-      // Audio
-      initAudio();
-
-      // Events
-      window.addEventListener('resize', onWindowResize);
-      setupUI();
-
-      animate();
-    }
-
-    function buildAnatomyAndWave() {
-      // -------------------------------------------------------------
-      // A. SUMBER BUNYI (Speaker) - X = -6.0
-      // -------------------------------------------------------------
-      const speakerGroup = new THREE.Group();
-      speakerGroup.position.set(-6.0, 0, 0);
-
-      const bodyGeo = new THREE.CylinderGeometry(0.65, 0.9, 1.1, 32);
-      const bodyMat = new THREE.MeshStandardMaterial({ color: 0x1e293b, roughness: 0.3 });
-      const bodyMesh = new THREE.Mesh(bodyGeo, bodyMat);
-      bodyMesh.rotation.z = -Math.PI / 2;
-      speakerGroup.add(bodyMesh);
-
-      const coneGeo = new THREE.ConeGeometry(0.8, 0.55, 32, 1, true);
-      const coneMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, side: THREE.DoubleSide });
-      speakerConeMesh = new THREE.Mesh(coneGeo, coneMat);
-      speakerConeMesh.rotation.z = -Math.PI / 2;
-      speakerConeMesh.position.x = 0.55;
-      speakerGroup.add(speakerConeMesh);
-
-      scene.add(speakerGroup);
-      addAnnotation(-6.0, 1.4, 0, "Sumber Bunyi");
-
-      // -------------------------------------------------------------
-      // B. GELOMBANG BUNYI (Merambat ke Telinga)
-      // -------------------------------------------------------------
-      const numRings = 10;
-      for (let i = 0; i < numRings; i++) {
-        const ringGeo = new THREE.TorusGeometry(0.6, 0.02, 16, 40);
-        const ringMat = new THREE.MeshBasicMaterial({
-          color: 0x38bdf8,
-          transparent: true,
-          opacity: 0.7
-        });
-        const ring = new THREE.Mesh(ringGeo, ringMat);
-        ring.rotation.y = Math.PI / 2;
-        ring.position.x = -5.2 + (i * 0.28);
-        scene.add(ring);
-        waveRings.push(ring);
-      }
-      addAnnotation(-3.8, 1.2, 0, "Gelombang Bunyi (Udara)");
-
-      // -------------------------------------------------------------
-      // C. TELINGA LUAR: Daun Telinga & Saluran Telinga - X = -2.2
-      // -------------------------------------------------------------
-      const earGroup = new THREE.Group();
-      earGroup.position.set(-2.2, 0, 0);
-
-      const skinMat = new THREE.MeshStandardMaterial({ color: 0xfca5a5, roughness: 0.5 });
-
-      // Daun Telinga (Pinna) - Dibuat stabil dengan gabungan Torus & Cermin
-      const pinnaRimGeo = new THREE.TorusGeometry(0.9, 0.2, 16, 32, Math.PI * 1.3);
-      const pinnaRim = new THREE.Mesh(pinnaRimGeo, skinMat);
-      pinnaRim.rotation.y = Math.PI / 2;
-      pinnaRim.rotation.x = -Math.PI / 6;
-      pinnaRim.position.set(-0.3, 0.1, 0);
-      earGroup.add(pinnaRim);
-
-      const lobeGeo = new THREE.SphereGeometry(0.4, 16, 16);
-      const lobe = new THREE.Mesh(lobeGeo, skinMat);
-      lobe.scale.set(0.6, 1.2, 0.8);
-      lobe.position.set(-0.3, -0.7, 0);
-      earGroup.add(lobe);
-
-      // Saluran Telinga (Ear Canal)
-      const canalGeo = new THREE.CylinderGeometry(0.5, 0.45, 1.4, 32, 1, true);
-      const canalMat = new THREE.MeshStandardMaterial({
-        color: 0xfca5a5,
-        transparent: true,
-        opacity: 0.4,
-        side: THREE.DoubleSide
-      });
-      const canalMesh = new THREE.Mesh(canalGeo, canalMat);
-      canalMesh.rotation.z = Math.PI / 2;
-      canalMesh.position.set(0.7, 0, 0);
-      earGroup.add(canalMesh);
-
-      scene.add(earGroup);
-      addAnnotation(-2.6, 1.8, 0, "Daun Telinga (Pinna)");
-      addAnnotation(-1.5, 0.9, 0, "Saluran Telinga");
-
-      // -------------------------------------------------------------
-      // D. TELINGA TENGAH: Gendang Telinga - X = -0.8
-      // -------------------------------------------------------------
-      const eardrumGeo = new THREE.CylinderGeometry(0.55, 0.55, 0.04, 32);
-      const eardrumMat = new THREE.MeshStandardMaterial({
-        color: 0xf43f5e,
-        transparent: true,
-        opacity: 0.85,
-        roughness: 0.2
-      });
-      eardrumMesh = new THREE.Mesh(eardrumGeo, eardrumMat);
-      eardrumMesh.position.set(-0.8, 0, 0);
-      eardrumMesh.rotation.z = Math.PI / 2;
-      scene.add(eardrumMesh);
-      addAnnotation(-0.8, 1.2, 0, "Gendang Telinga");
-
-      // -------------------------------------------------------------
-      // E. TULANG PENDENGARAN (Malleus, Incus, Stapes) - X = -0.4 s/d 0.7
-      // -------------------------------------------------------------
-      const ossiclesGroup = new THREE.Group();
-      const boneMat = new THREE.MeshStandardMaterial({ color: 0xfde047, roughness: 0.4 });
-
-      // Malleus (Martil)
-      const malleusGeo = new THREE.CylinderGeometry(0.06, 0.08, 0.6, 16);
-      malleusMesh = new THREE.Mesh(malleusGeo, boneMat);
-      malleusMesh.position.set(-0.5, -0.05, 0);
-      malleusMesh.rotation.z = -Math.PI / 4;
-      ossiclesGroup.add(malleusMesh);
-
-      // Incus (Landasan)
-      const incusGeo = new THREE.BoxGeometry(0.3, 0.2, 0.15);
-      incusMesh = new THREE.Mesh(incusGeo, boneMat);
-      incusMesh.position.set(-0.2, 0.15, 0);
-      ossiclesGroup.add(incusMesh);
-
-      // Stapes (Sanggurdi)
-      const stapesGeo = new THREE.TorusGeometry(0.12, 0.04, 12, 24);
-      stapesMesh = new THREE.Mesh(stapesGeo, boneMat);
-      stapesMesh.position.set(0.15, 0, 0);
-      stapesMesh.rotation.y = Math.PI / 2;
-      ossiclesGroup.add(stapesMesh);
-
-      scene.add(ossiclesGroup);
-      addAnnotation(-0.1, 1.0, 0, "Tulang Pendengaran");
-
-      // -------------------------------------------------------------
-      // F. TELINGA DALAM: Koklea & Saraf - X = 1.2 s/d 3.2
-      // -------------------------------------------------------------
-      const innerEarGroup = new THREE.Group();
-      innerEarGroup.position.set(1.2, 0, 0);
-
-      // Koklea (Rumah Siput)
-      const spiralGeo = new THREE.TorusGeometry(0.65, 0.18, 16, 60, Math.PI * 2.5);
-      const cochleaMat = new THREE.MeshStandardMaterial({ color: 0xc084fc, roughness: 0.3 });
-      cochleaMesh = new THREE.Mesh(spiralGeo, cochleaMat);
-      cochleaMesh.rotation.x = Math.PI / 2;
-      innerEarGroup.add(cochleaMesh);
-
-      // Saluran Setengah Lingkaran (Keseimbangan)
-      const canalRingGeo = new THREE.TorusGeometry(0.4, 0.06, 12, 24, Math.PI * 1.5);
-      const canalInnerMat = new THREE.MeshStandardMaterial({ color: 0xe9d5ff });
-      const canal1 = new THREE.Mesh(canalRingGeo, canalInnerMat);
-      canal1.position.set(-0.1, 0.6, 0);
-      innerEarGroup.add(canal1);
-
-      // Sel Rambut Auditori
-      for (let i = 0; i < 9; i++) {
-        const hairGeo = new THREE.CylinderGeometry(0.012, 0.012, 0.35, 8);
-        const hairMat = new THREE.MeshBasicMaterial({ color: 0x4ade80 });
-        const hair = new THREE.Mesh(hairGeo, hairMat);
-        hair.position.set((i * 0.07) - 0.3, 0.18, 0);
-        innerEarGroup.add(hair);
-        hairCells.push(hair);
-      }
-
-      // Saraf Auditori
-      const nerveGeo = new THREE.CylinderGeometry(0.1, 0.14, 1.4, 16);
-      const nerveMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, roughness: 0.5 });
-      auditoryNerveMesh = new THREE.Mesh(nerveGeo, nerveMat);
-      auditoryNerveMesh.rotation.z = -Math.PI / 2;
-      auditoryNerveMesh.position.set(1.2, 0, 0);
-      innerEarGroup.add(auditoryNerveMesh);
-
-      scene.add(innerEarGroup);
-
-      addAnnotation(1.2, 1.2, 0, "Koklea (Rumah Siput)");
-      addAnnotation(2.4, 0.7, 0, "Saraf Auditori");
-    }
-
-    function addAnnotation(x, y, z, text) {
-      const div = document.createElement('div');
-      div.className = 'annotation-label';
-      div.textContent = text;
-      labelsContainer.appendChild(div);
-
-      annotations.push({
-        element: div,
-        pos: new THREE.Vector3(x, y, z)
-      });
-    }
-
-    function updateAnnotations() {
-      annotations.forEach(ann => {
-        const vector = ann.pos.clone();
-        vector.project(camera);
-
-        const x = (vector.x * 0.5 + 0.5) * window.innerWidth;
-        const y = (-(vector.y * 0.5) + 0.5) * window.innerHeight;
-
-        if (vector.z > 1) {
-          ann.element.style.opacity = 0;
-        } else {
-          ann.element.style.opacity = 1;
-          ann.element.style.left = `${x}px`;
-          ann.element.style.top = `${y}px`;
-        }
-      });
-    }
-
-    function initAudio() {
-      const AudioContext = window.AudioContext || window.webkitAudioContext;
-      audioCtx = new AudioContext();
-
-      oscillator = audioCtx.createOscillator();
-      gainNode = audioCtx.createGain();
-
-      oscillator.type = 'sine';
-      updateAudioParameters();
-
-      oscillator.connect(gainNode);
-      gainNode.connect(audioCtx.destination);
-      oscillator.start();
-    }
-
-    function updateAudioParameters() {
-      if (!audioCtx) return;
-      
-      const audioFreq = 140 + (params.freq * 120);
-      oscillator.frequency.setTargetAtTime(audioFreq, audioCtx.currentTime, 0.05);
-
-      const gainValue = isAudioActive ? params.amp * 0.12 : 0;
-      gainNode.gain.setTargetAtTime(gainValue, audioCtx.currentTime, 0.05);
-    }
-
-    function setupUI() {
-      freqInput.addEventListener('input', (e) => {
-        params.freq = parseFloat(e.target.value);
-        freqVal.textContent = params.freq.toFixed(1) + ' Hz';
-        updateAudioParameters();
-      });
-
-      ampInput.addEventListener('input', (e) => {
-        params.amp = parseFloat(e.target.value);
-        ampVal.textContent = params.amp.toFixed(2);
-        updateAudioParameters();
-      });
-
-      speedInput.addEventListener('input', (e) => {
-        params.speed = parseFloat(e.target.value);
-        speedVal.textContent = params.speed.toFixed(1) + 'x';
-      });
-
-      btnAudio.addEventListener('click', () => {
-        if (audioCtx && audioCtx.state === 'suspended') {
-          audioCtx.resume();
-        }
-        isAudioActive = !isAudioActive;
-        btnAudio.textContent = isAudioActive ? '🔊 Audio: ON' : '🔇 Audio: OFF';
-        btnAudio.style.background = isAudioActive ? '#0284c7' : '#475569';
-        updateAudioParameters();
-      });
-
-      btnReset.addEventListener('click', () => {
-        camera.position.set(0, 3.5, 13);
-        controls.reset();
-      });
-    }
-
-    function onWindowResize() {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    }
-
-    let time = 0;
-
-    function animate() {
-      requestAnimationFrame(animate);
-
-      time += 0.03 * params.speed * params.freq;
-
-      // 1. Getaran Speaker Cone
-      const speakerVibe = Math.sin(time * 5) * params.amp * 0.08;
-      if (speakerConeMesh) {
-        speakerConeMesh.position.x = 0.55 + speakerVibe;
-      }
-
-      // 2. Merambatnya Gelombang Bunyi
-      waveRings.forEach((ring, index) => {
-        const wavePhase = time * 3 - (index * 0.35);
-        const scale = 1 + (Math.sin(wavePhase) * params.amp * 0.2);
-        ring.scale.set(scale, scale, 1);
-
-        const opacity = 0.25 + (Math.sin(wavePhase) * 0.45);
-        ring.material.opacity = Math.max(0.1, opacity);
-      });
-
-      // 3. Getaran Gendang Telinga
-      const eardrumVibe = Math.sin(time * 3 - 2.8) * params.amp * 0.1;
-      if (eardrumMesh) {
-        eardrumMesh.position.x = -0.8 + eardrumVibe;
-      }
-
-      // 4. Gerakan Tulang Pendengaran
-      if (malleusMesh && incusMesh && stapesMesh) {
-        malleusMesh.position.x = -0.5 + (eardrumVibe * 0.8);
-        incusMesh.position.x = -0.2 + (eardrumVibe * 0.7);
-        incusMesh.rotation.z = eardrumVibe * 0.4;
-        stapesMesh.position.x = 0.15 + (eardrumVibe * 0.6);
+<body class="min-h-screen flex flex-col justify-between antialiased selection:bg-cyan-500 selection:text-black">
+
+    <!-- Header Section -->
+    <header class="border-b border-cyber-border bg-cyber-card/80 backdrop-blur sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap justify-between items-center gap-4">
+            <div class="flex items-center gap-3">
+                <div class="p-2.5 bg-gradient-to-tr from-cyan-500 to-blue-600 rounded-xl shadow-lg shadow-cyan-500/20">
+                    <i data-lucide="activity" class="w-6 h-6 text-white"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-bold bg-gradient-to-r from-cyan-400 via-sky-300 to-pink-400 bg-clip-text text-transparent">
+                        Simulasi Sistem Pendengaran & Gelombang Bunyi
+                    </h1>
+                    <p class="text-xs text-slate-400">Media Pembelajaran Interaktif Biologi & Fisika — Anatomi Telinga & Gelombang Auditori</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-2 text-xs bg-slate-900/80 px-3 py-1.5 rounded-lg border border-slate-800 text-slate-300">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
+                <span>Web Audio API Ready</span>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content Container -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6">
+
+        <!-- LEFT COLUMN: Control Panel & Oscilloscope (4 Cols) -->
+        <div class="lg:col-span-4 flex flex-col gap-6">
+            
+            <!-- Audio Generator Controls -->
+            <div class="bg-cyber-card border border-cyber-border rounded-2xl p-5 shadow-xl">
+                <div class="flex items-center justify-between mb-4 border-b border-slate-800 pb-3">
+                    <h2 class="font-semibold text-slate-200 flex items-center gap-2 text-sm uppercase tracking-wider">
+                        <i data-lucide="sliders" class="w-4 h-4 text-cyan-400"></i> Generator Gelombang
+                    </h2>
+                    <button id="btnPlay" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold rounded-xl transition shadow-lg shadow-cyan-500/20 active:scale-95">
+                        <i data-lucide="play" class="w-4 h-4 fill-current" id="playIcon"></i>
+                        <span id="playBtnText">Mulai Suara</span>
+                    </button>
+                </div>
+
+                <!-- Frequency Slider -->
+                <div class="space-y-2 mb-5">
+                    <div class="flex justify-between text-sm">
+                        <label class="text-slate-300 font-medium flex items-center gap-1.5">
+                            <i data-lucide="radio" class="w-4 h-4 text-cyan-400"></i> Frekuensi (Pitch / Nada)
+                        </label>
+                        <span id="freqVal" class="font-mono font-bold text-cyan-400 text-base">440 Hz</span>
+                    </div>
+                    <input type="range" id="sliderFreq" min="100" max="4000" value="440" step="1" 
+                           class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-cyan-400">
+                    <div class="flex justify-between text-[10px] text-slate-500 font-mono">
+                        <span>100 Hz (Rendah)</span>
+                        <span>1000 Hz</span>
+                        <span>4000 Hz (Tinggi)</span>
+                    </div>
+                </div>
+
+                <!-- Amplitude / Volume Slider -->
+                <div class="space-y-2 mb-5">
+                    <div class="flex justify-between text-sm">
+                        <label class="text-slate-300 font-medium flex items-center gap-1.5">
+                            <i data-lucide="volume-2" class="w-4 h-4 text-pink-400"></i> Amplitudo (Volume)
+                        </label>
+                        <span id="ampVal" class="font-mono font-bold text-pink-400 text-base">50%</span>
+                    </div>
+                    <input type="range" id="sliderAmp" min="0" max="100" value="50" step="1" 
+                           class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-pink-500">
+                    <div class="flex justify-between text-[10px] text-slate-500 font-mono">
+                        <span>0% (Hening)</span>
+                        <span>50%</span>
+                        <span>100% (Nyaring)</span>
+                    </div>
+                </div>
+
+                <!-- Waveform Selector -->
+                <div class="space-y-2">
+                    <label class="text-slate-300 font-medium text-xs uppercase tracking-wider block mb-1">
+                        Bentuk Gelombang (Timbre)
+                    </label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button data-wave="sine" class="wave-btn active flex items-center justify-center gap-2 py-2 px-3 bg-cyan-950/60 hover:bg-slate-700 border border-cyan-500/50 rounded-xl text-xs font-medium text-cyan-300 transition">
+                            <i data-lucide="waves" class="w-3.5 h-3.5"></i> Sinus
+                        </button>
+                        <button data-wave="triangle" class="wave-btn flex items-center justify-center gap-2 py-2 px-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl text-xs font-medium text-slate-200 transition">
+                            <i data-lucide="triangle" class="w-3.5 h-3.5 text-pink-400"></i> Segitiga
+                        </button>
+                        <button data-wave="square" class="wave-btn flex items-center justify-center gap-2 py-2 px-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl text-xs font-medium text-slate-200 transition">
+                            <i data-lucide="square" class="w-3.5 h-3.5 text-yellow-400"></i> Kotak
+                        </button>
+                        <button data-wave="sawtooth" class="wave-btn flex items-center justify-center gap-2 py-2 px-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl text-xs font-medium text-slate-200 transition">
+                            <i data-lucide="activity" class="w-3.5 h-3.5 text-emerald-400"></i> Gergaji
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Real-time Oscilloscope Canvas -->
+            <div class="bg-cyber-card border border-cyber-border rounded-2xl p-5 shadow-xl flex flex-col">
+                <div class="flex items-center justify-between mb-3">
+                    <h2 class="font-semibold text-slate-200 flex items-center gap-2 text-sm uppercase tracking-wider">
+                        <i data-lucide="monitor" class="w-4 h-4 text-emerald-400"></i> Osiloskop Sinyal
+                    </h2>
+                    <span class="text-[10px] text-emerald-400 font-mono bg-emerald-950/60 border border-emerald-800/50 px-2 py-0.5 rounded-full">
+                        Live Physics
+                    </span>
+                </div>
+                <div class="relative w-full h-32 bg-slate-950 rounded-xl border border-slate-800 overflow-hidden">
+                    <canvas id="oscilloscope" class="w-full h-full block"></canvas>
+                </div>
+                <p class="text-[11px] text-slate-400 mt-2 italic text-center">
+                    Sumbu Y = Amplitudo (Kenyaringan) | Sumbu X = Panjang Gelombang & Frekuensi
+                </p>
+            </div>
+
+        </div>
+
+        <!-- RIGHT COLUMN: Visual Ear Simulation & Detailed Educational Panel (8 Cols) -->
+        <div class="lg:col-span-8 flex flex-col gap-6">
+
+            <!-- Ear Visual Container (Interactive SVG) -->
+            <div class="bg-cyber-card border border-cyber-border rounded-2xl p-5 shadow-xl flex flex-col relative overflow-hidden">
+                <div class="flex flex-wrap justify-between items-center mb-3 gap-2">
+                    <div>
+                        <h2 class="font-bold text-slate-100 text-lg flex items-center gap-2">
+                            <i data-lucide="ear" class="w-5 h-5 text-cyan-400"></i> Anatomi Telinga Manusia 3D/2D Interaktif
+                        </h2>
+                        <p class="text-xs text-slate-400">Klik bagian organ telinga di bawah untuk melihat fungsi anatomi dan prinsip fisikanya</p>
+                    </div>
+                    <div class="flex gap-2 text-[10px]">
+                        <span class="px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20">Telinga Luar</span>
+                        <span class="px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">Telinga Tengah</span>
+                        <span class="px-2 py-0.5 rounded bg-pink-500/10 text-pink-400 border border-pink-500/20">Telinga Dalam</span>
+                    </div>
+                </div>
+
+                <!-- Detailed SVG Canvas for Ear Anatomy -->
+                <div class="w-full bg-slate-950/90 rounded-xl border border-slate-800 p-2 overflow-x-auto flex justify-center">
+                    <svg id="earSvg" viewBox="0 0 950 460" class="w-full h-auto min-w-[750px] select-none">
+                        <defs>
+                            <linearGradient id="skinGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#f4a261" />
+                                <stop offset="100%" stop-color="#e76f51" />
+                            </linearGradient>
+                            <linearGradient id="canalGrad" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stop-color="#b56576" />
+                                <stop offset="100%" stop-color="#6d597a" />
+                            </linearGradient>
+                            <linearGradient id="cochleaGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#ec4899" />
+                                <stop offset="100%" stop-color="#831843" />
+                            </linearGradient>
+                            <linearGradient id="boneGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#f8fafc" />
+                                <stop offset="100%" stop-color="#94a3b8" />
+                            </linearGradient>
+                            <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+                                <feGaussianBlur stdDeviation="4" result="blur" />
+                                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                            </filter>
+                        </defs>
+
+                        <!-- Background Atmosphere -->
+                        <rect width="950" height="460" fill="#060913" rx="12"/>
+
+                        <!-- 1. TELINGA LUAR: PINNA (Daun Telinga Detail) -->
+                        <g id="part-pinna" class="ear-part" data-part="pinna">
+                            <!-- Outer Helix -->
+                            <path d="M 130,40 C 45,40 25,125 25,210 C 25,310 50,390 100,435 C 135,465 170,425 165,390 C 160,355 135,335 135,295 C 135,255 160,225 160,175 C 160,120 165,40 130,40 Z" 
+                                  fill="url(#skinGrad)" stroke="#c55331" stroke-width="3.5" />
+                            <!-- Inner Folds / Antihelix & Concha -->
+                            <path d="M 115,70 C 65,70 50,135 50,210 C 50,290 70,355 105,395 C 120,410 135,395 125,375 C 100,335 85,275 85,205 C 85,145 100,100 120,85 Z" 
+                                  fill="#d97a53" opacity="0.85"/>
+                            <path d="M 130,130 C 105,140 100,180 100,220 C 100,260 125,280 125,300" 
+                                  fill="none" stroke="#b04422" stroke-width="4.5" stroke-linecap="round"/>
+                            <!-- Lobulus (Bawah Telinga) -->
+                            <path d="M 100,395 C 75,415 85,445 110,435 Z" fill="#e76f51" stroke="#c55331" stroke-width="2"/>
+                            <text x="65" y="448" fill="#fbbf24" font-size="12" font-weight="bold">1. Daun Telinga (Pinna)</text>
+                        </g>
+
+                        <!-- 2. SALURAN TELINGA (Ear Canal) -->
+                        <g id="part-canal" class="ear-part" data-part="canal">
+                            <path d="M 155,210 C 190,215 240,225 305,225 L 305,265 C 240,265 190,255 155,250 Z" 
+                                  fill="url(#canalGrad)" stroke="#6d3242" stroke-width="2.5"/>
+                            <text x="185" y="285" fill="#fbbf24" font-size="11" font-weight="bold">2. Saluran Telinga</text>
+                        </g>
+
+                        <!-- 3. GENDANG TELINGA (Tympanic Membrane) -->
+                        <g id="part-eardrum" class="ear-part" data-part="eardrum">
+                            <ellipse id="eardrumElem" cx="310" cy="245" rx="6" ry="27" fill="#06b6d4" stroke="#38bdf8" stroke-width="2.5"/>
+                            <text x="255" y="165" fill="#06b6d4" font-size="12" font-weight="bold">3. Membran Timpani</text>
+                            <path d="M 290,170 L 306,230" stroke="#06b6d4" stroke-width="1.5" marker-end="url(#arrow)"/>
+                        </g>
+
+                        <!-- 4. TULANG PENDENGARAN (Ossicles: Malleus, Incus, Stapes) -->
+                        <g id="part-ossicles" class="ear-part" data-part="ossicles">
+                            <g id="ossiclesGroup">
+                                <!-- Malleus (Martil) -->
+                                <path d="M 310,245 L 335,215 L 343,210 C 348,210 353,218 348,225 L 335,235 Z" 
+                                      fill="url(#boneGrad)" stroke="#64748b" stroke-width="1.5"/>
+                                <!-- Incus (Landasan) -->
+                                <path d="M 345,212 L 370,215 L 365,242 L 352,232 Z" 
+                                      fill="url(#boneGrad)" stroke="#64748b" stroke-width="1.5"/>
+                                <!-- Stapes (Sanggurdi) -->
+                                <path d="M 365,240 L 390,237 L 390,250 L 365,247 Z M 390,234 L 390,253 L 398,253 L 398,234 Z" 
+                                      fill="url(#boneGrad)" stroke="#38bdf8" stroke-width="1.5"/>
+                            </g>
+                            <text x="320" y="130" fill="#38bdf8" font-size="12" font-weight="bold">4. Tulang Pendengaran</text>
+                            <text x="320" y="145" fill="#94a3b8" font-size="10">(Martil, Landasan, Sanggurdi)</text>
+                        </g>
+
+                        <!-- 5. SALURAN SETENGAH LINGKARAN (Semicircular Canals - Keseimbangan) -->
+                        <g id="part-balance" class="ear-part" data-part="balance">
+                            <path d="M 440,150 C 400,120 370,150 370,180 C 370,200 390,210 405,195" fill="none" stroke="#eab308" stroke-width="5" stroke-linecap="round"/>
+                            <path d="M 470,170 C 470,130 420,120 400,150" fill="none" stroke="#f59e0b" stroke-width="5" stroke-linecap="round"/>
+                            <path d="M 450,210 C 490,210 500,160 460,150" fill="none" stroke="#d97706" stroke-width="5" stroke-linecap="round"/>
+                            <text x="420,105" fill="#facc15" font-size="11" font-weight="bold">Saluran Keseimbangan</text>
+                        </g>
+
+                        <!-- 6. KOKLEA / RUMAH SIPUT (Cochlea) -->
+                        <g id="part-cochlea" class="ear-part" data-part="cochlea">
+                            <!-- Cochlea Spiral Shell Structure -->
+                            <path d="M 400,245 C 440,210 510,200 550,235 C 590,270 560,340 500,350 C 440,360 410,290 460,265 C 500,245 520,300 480,315 C 460,325 450,300 465,290" 
+                                  fill="none" stroke="url(#cochleaGrad)" stroke-width="12" stroke-linecap="round"/>
+                            <text x="480" y="385" fill="#ec4899" font-size="12" font-weight="bold">6. Koklea (Rumah Siput)</text>
+                        </g>
+
+                        <!-- 7. SARAF AUDITORI (Auditory Nerve to Brain) -->
+                        <g id="part-nerve" class="ear-part" data-part="nerve">
+                            <path d="M 550,320 C 600,340 650,380 720,400" fill="none" stroke="#38bdf8" stroke-width="6" stroke-linecap="round" stroke-dasharray="6 3"/>
+                            <text x="590" y="425" fill="#38bdf8" font-size="11" font-weight="bold">7. Saraf Pendengaran</text>
+                        </g>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- DYNAMIC EDUCATIONAL INFO PANEL -->
+            <div id="infoBox" class="bg-cyber-card border border-cyber-border rounded-2xl p-6 shadow-xl">
+                <div class="flex items-center gap-3 mb-3">
+                    <div id="infoIcon" class="p-2.5 bg-cyan-500/10 text-cyan-400 rounded-xl border border-cyan-500/20">
+                        <i data-lucide="info" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h3 id="infoTitle" class="text-base font-bold text-slate-100">Pilih Bagian Telinga di Atas</h3>
+                        <p id="infoSubtitle" class="text-xs text-slate-400">Klik salah satu organ pada gambar ilustrasi telinga untuk mempelajari detail anatomi & fisikanya.</p>
+              
