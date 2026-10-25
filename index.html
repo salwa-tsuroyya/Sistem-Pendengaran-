@@ -1,29 +1,25 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulasi Interaktif Anatomi Telinga & Gelombang Bunyi</title>
+    <title>Simulasi Interaktif Sistem Pendengaran & Gelombang Bunyi</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
+            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
-                        pastel: {
-                            bg: '#f8fafc',
-                            card: '#ffffff',
-                            border: '#e2e8f0',
-                            pink: '#f472b6',
-                            softpink: '#fce7f3',
-                            blue: '#38bdf8',
-                            softblue: '#e0f2fe',
-                            teal: '#14b8a6',
-                            softteal: '#ccfbf1',
-                            amber: '#f59e0b',
-                            softamber: '#fef3c7',
-                            purple: '#a855f7'
+                        cyber: {
+                            bg: '#0a0f1d',
+                            card: '#12192c',
+                            border: '#1e293b',
+                            cyan: '#06b6d4',
+                            magenta: '#ec4899',
+                            yellow: '#eab308',
+                            green: '#10b981'
                         }
                     },
                     fontFamily: {
@@ -40,69 +36,68 @@
         
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #f1f5f9;
-            color: #1e293b;
+            background-color: #080c17;
+            color: #f1f5f9;
         }
 
-        /* Custom Soft Scrollbar */
+        /* Custom Scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
         }
         ::-webkit-scrollbar-track {
-            background: #f1f5f9;
+            background: #080c17;
         }
         ::-webkit-scrollbar-thumb {
-            background: #cbd5e1;
+            background: #1e293b;
             border-radius: 4px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: #94a3b8;
+            background: #334155;
         }
 
         /* SVG Interactive Elements Styling */
-        .ear-organ {
+        .ear-part {
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .ear-organ:hover {
-            filter: drop-shadow(0 0 10px rgba(14, 165, 233, 0.8)) brightness(1.05);
+        .ear-part:hover {
+            filter: drop-shadow(0 0 12px rgba(6, 182, 212, 0.9));
+            opacity: 0.95;
         }
-        .ear-organ.active {
-            filter: drop-shadow(0 0 14px rgba(236, 72, 153, 0.9)) brightness(1.1);
+        .ear-part.active {
+            filter: drop-shadow(0 0 18px rgba(236, 72, 153, 1));
         }
 
-        /* Interactive Pin Marker Animation */
-        .pin-marker {
-            cursor: pointer;
-            transition: transform 0.2s ease;
+        /* Glow Animations */
+        @keyframes pulse-glow {
+            0%, 100% { opacity: 0.4; }
+            50% { opacity: 1; }
         }
-        .pin-marker:hover {
-            transform: scale(1.15);
+        .glow-effect {
+            animation: pulse-glow 1.5s infinite;
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between antialiased selection:bg-sky-200 selection:text-sky-900">
+<body class="min-h-screen flex flex-col justify-between antialiased selection:bg-cyan-500 selection:text-black">
 
     <!-- Header Section -->
-    <header class="border-b border-slate-200 bg-white/90 backdrop-blur sticky top-0 z-50 shadow-sm">
+    <header class="border-b border-cyber-border bg-cyber-card/80 backdrop-blur sticky top-0 z-50">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap justify-between items-center gap-4">
             <div class="flex items-center gap-3">
-                <div class="p-2.5 bg-gradient-to-tr from-sky-400 to-teal-400 rounded-xl shadow-md text-white">
-                    <i data-lucide="activity" class="w-6 h-6"></i>
+                <div class="p-2.5 bg-gradient-to-tr from-cyan-500 to-blue-600 rounded-xl shadow-lg shadow-cyan-500/20">
+                    <i data-lucide="activity" class="w-6 h-6 text-white"></i>
                 </div>
                 <div>
-                    <h1 class="text-xl font-bold bg-gradient-to-r from-sky-600 via-teal-600 to-pink-600 bg-clip-text text-transparent">
-                        Simulasi Anatomi Telinga & Gelombang Bunyi
+                    <h1 class="text-xl font-bold bg-gradient-to-r from-cyan-400 via-sky-300 to-pink-400 bg-clip-text text-transparent">
+                        Simulasi Sistem Pendengaran & Gelombang Bunyi
                     </h1>
-                    <p class="text-xs text-slate-500 font-medium">Media Pembelajaran Interaktif Biologi Auditori & Fisika Gelombang</p>
+                    <p class="text-xs text-slate-400">Media Pembelajaran Interaktif Biologi & Fisika — Anatomi Telinga & Gelombang Auditori</p>
                 </div>
             </div>
-            <div class="flex items-center gap-3">
-                <div class="flex items-center gap-2 text-xs bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-full border border-emerald-200 font-medium shadow-sm">
-                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
-                    <span>Web Audio API Ready</span>
-                </div>
+            <div class="flex items-center gap-2 text-xs bg-slate-900/80 px-3 py-1.5 rounded-lg border border-slate-800 text-slate-300">
+                <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
+                <span class="font-mono text-[11px]">Web Audio API Ready</span>
             </div>
         </div>
     </header>
@@ -110,16 +105,16 @@
     <!-- Main Content Container -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-        <!-- LEFT COLUMN: Audio Generator Controls & Oscilloscope (4 Cols) -->
+        <!-- LEFT COLUMN: Control Panel & Oscilloscope (4 Cols) -->
         <div class="lg:col-span-4 flex flex-col gap-6">
             
-            <!-- Audio Generator Controls Card -->
-            <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition">
-                <div class="flex items-center justify-between mb-4 border-b border-slate-100 pb-3">
-                    <h2 class="font-bold text-slate-800 flex items-center gap-2 text-sm tracking-wide uppercase">
-                        <i data-lucide="sliders" class="w-4 h-4 text-sky-500"></i> Generator Suara
+            <!-- Audio Generator Controls -->
+            <div class="bg-cyber-card border border-cyber-border rounded-2xl p-5 shadow-xl">
+                <div class="flex items-center justify-between mb-4 border-b border-slate-800 pb-3">
+                    <h2 class="font-semibold text-slate-200 flex items-center gap-2 text-sm uppercase tracking-wider">
+                        <i data-lucide="sliders" class="w-4 h-4 text-cyan-400"></i> Pembangkit Gelombang
                     </h2>
-                    <button id="btnPlay" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-sky-500 to-teal-500 hover:from-sky-600 hover:to-teal-600 text-white font-semibold rounded-xl transition shadow-md shadow-sky-200 active:scale-95 text-xs">
+                    <button id="btnPlay" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold rounded-xl transition shadow-lg shadow-cyan-500/20 active:scale-95">
                         <i data-lucide="play" class="w-4 h-4 fill-current" id="playIcon"></i>
                         <span id="playBtnText">Mulai Suara</span>
                     </button>
@@ -127,29 +122,568 @@
 
                 <!-- Frequency Slider -->
                 <div class="space-y-2 mb-5">
-                    <div class="flex justify-between text-xs font-semibold">
-                        <label class="text-slate-700 flex items-center gap-1.5">
-                            <i data-lucide="radio" class="w-4 h-4 text-sky-500"></i> Frekuensi (Pitch / Nada)
+                    <div class="flex justify-between text-sm">
+                        <label class="text-slate-300 font-medium flex items-center gap-1.5">
+                            <i data-lucide="radio" class="w-4 h-4 text-cyan-400"></i> Frekuensi (Pitch / Nada)
                         </label>
-                        <span id="freqVal" class="font-mono text-sky-600 text-sm bg-sky-50 px-2 py-0.5 rounded border border-sky-200">440 Hz</span>
+                        <span id="freqVal" class="font-mono font-bold text-cyan-400 text-base">440 Hz</span>
                     </div>
                     <input type="range" id="sliderFreq" min="100" max="4000" value="440" step="1" 
-                           class="w-full h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-sky-500 border border-slate-200">
-                    <div class="flex justify-between text-[10px] text-slate-400 font-medium">
-                        <span>100 Hz (Bass)</span>
+                           class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-cyan-400">
+                    <div class="flex justify-between text-[10px] text-slate-500 font-mono">
+                        <span>100 Hz (Rendah)</span>
                         <span>1000 Hz</span>
-                        <span>4000 Hz (Treble)</span>
+                        <span>4000 Hz (Tinggi)</span>
                     </div>
                 </div>
 
                 <!-- Amplitude / Volume Slider -->
                 <div class="space-y-2 mb-5">
-                    <div class="flex justify-between text-xs font-semibold">
-                        <label class="text-slate-700 flex items-center gap-1.5">
-                            <i data-lucide="volume-2" class="w-4 h-4 text-pink-500"></i> Amplitudo (Volume)
+                    <div class="flex justify-between text-sm">
+                        <label class="text-slate-300 font-medium flex items-center gap-1.5">
+                            <i data-lucide="volume-2" class="w-4 h-4 text-pink-400"></i> Amplitudo (Volume)
                         </label>
-                        <span id="ampVal" class="font-mono text-pink-600 text-sm bg-pink-50 px-2 py-0.5 rounded border border-pink-200">50%</span>
+                        <span id="ampVal" class="font-mono font-bold text-pink-400 text-base">50%</span>
                     </div>
                     <input type="range" id="sliderAmp" min="0" max="100" value="50" step="1" 
-                           class="w-full h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-pink-500 border border-slate-200">
-                    <div class="flex justify-between text-[10px] text-slate-400 font-medium
+                           class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-pink-500">
+                    <div class="flex justify-between text-[10px] text-slate-500 font-mono">
+                        <span>0% (Hening)</span>
+                        <span>50%</span>
+                        <span>100% (Sangat Nyaring)</span>
+                    </div>
+                </div>
+
+                <!-- Waveform Selector -->
+                <div class="space-y-2">
+                    <label class="text-slate-300 font-medium text-xs uppercase tracking-wider block mb-1">
+                        Bentuk Gelombang (Timbre)
+                    </label>
+                    <div class="grid grid-cols-2 gap-2">
+                        <button data-wave="sine" class="wave-btn active flex items-center justify-center gap-2 py-2 px-3 bg-cyan-950/60 hover:bg-slate-700 border border-cyan-500/50 rounded-xl text-xs font-medium text-cyan-300 transition">
+                            <i data-lucide="waves" class="w-3.5 h-3.5"></i> Sinus
+                        </button>
+                        <button data-wave="triangle" class="wave-btn flex items-center justify-center gap-2 py-2 px-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl text-xs font-medium text-slate-200 transition">
+                            <i data-lucide="triangle" class="w-3.5 h-3.5 text-pink-400"></i> Segitiga
+                        </button>
+                        <button data-wave="square" class="wave-btn flex items-center justify-center gap-2 py-2 px-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl text-xs font-medium text-slate-200 transition">
+                            <i data-lucide="square" class="w-3.5 h-3.5 text-yellow-400"></i> Kotak
+                        </button>
+                        <button data-wave="sawtooth" class="wave-btn flex items-center justify-center gap-2 py-2 px-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl text-xs font-medium text-slate-200 transition">
+                            <i data-lucide="activity" class="w-3.5 h-3.5 text-emerald-400"></i> Gergaji
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Real-time Oscilloscope Canvas -->
+            <div class="bg-cyber-card border border-cyber-border rounded-2xl p-5 shadow-xl flex flex-col">
+                <div class="flex items-center justify-between mb-3">
+                    <h2 class="font-semibold text-slate-200 flex items-center gap-2 text-sm uppercase tracking-wider">
+                        <i data-lucide="monitor" class="w-4 h-4 text-emerald-400"></i> Osiloskop Sinyal Real-Time
+                    </h2>
+                    <span class="text-[10px] text-emerald-400 font-mono bg-emerald-950/60 border border-emerald-800/50 px-2 py-0.5 rounded-full">
+                        Live Physics
+                    </span>
+                </div>
+                <div class="relative w-full h-32 bg-slate-950 rounded-xl border border-slate-800 overflow-hidden">
+                    <canvas id="oscilloscope" class="w-full h-full block"></canvas>
+                </div>
+                <p class="text-[11px] text-slate-400 mt-2 italic text-center">
+                    Sumbu Y = Amplitudo (Kenyaringan) | Sumbu X = Panjang Gelombang & Frekuensi
+                </p>
+            </div>
+
+        </div>
+
+        <!-- RIGHT COLUMN: Visual Ear Simulation & Detailed Educational Panel (8 Cols) -->
+        <div class="lg:col-span-8 flex flex-col gap-6">
+
+            <!-- Ear Visual Container (Interactive SVG) -->
+            <div class="bg-cyber-card border border-cyber-border rounded-2xl p-5 shadow-xl flex flex-col relative overflow-hidden">
+                <div class="flex flex-wrap justify-between items-center mb-3 gap-2">
+                    <div>
+                        <h2 class="font-bold text-slate-100 text-lg flex items-center gap-2">
+                            <i data-lucide="ear" class="w-5 h-5 text-cyan-400"></i> Visualisasi Anatomi Telinga Medis Interaktif
+                        </h2>
+                        <p class="text-xs text-slate-400">Klik bagian organ telinga pada diagram di bawah untuk mempelajari fungsi anatomi & fisikanya</p>
+                    </div>
+                    <div class="flex gap-2 text-[10px]">
+                        <span class="px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20">Telinga Luar</span>
+                        <span class="px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">Telinga Tengah</span>
+                        <span class="px-2 py-0.5 rounded bg-pink-500/10 text-pink-400 border border-pink-500/20">Telinga Dalam</span>
+                    </div>
+                </div>
+
+                <!-- Detailed SVG Canvas for Ear Anatomy -->
+                <div class="w-full bg-slate-950/90 rounded-xl border border-slate-800 p-3 overflow-x-auto flex justify-center">
+                    <svg id="earSvg" viewBox="0 0 1000 500" class="w-full h-auto min-w-[800px] select-none">
+                        <defs>
+                            <!-- Realistic Skin Gradients -->
+                            <linearGradient id="skinOuter" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#f5a383" />
+                                <stop offset="50%" stop-color="#e07a5f" />
+                                <stop offset="100%" stop-color="#b85338" />
+                            </linearGradient>
+                            <linearGradient id="skinShadow" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stop-color="#d46a4e" />
+                                <stop offset="100%" stop-color="#8c3b24" />
+                            </linearGradient>
+
+                            <!-- Canal Gradient -->
+                            <linearGradient id="canalBg" x1="0%" y1="0%" x2="100%" y2="0%">
+                                <stop offset="0%" stop-color="#b85338" />
+                                <stop offset="40%" stop-color="#7a3424" />
+                                <stop offset="100%" stop-color="#3d1810" />
+                            </linearGradient>
+
+                            <!-- Bone Gradient -->
+                            <linearGradient id="temporalBone" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#e2e8f0" />
+                                <stop offset="40%" stop-color="#cbd5e1" />
+                                <stop offset="100%" stop-color="#64748b" />
+                            </linearGradient>
+                            <linearGradient id="ossicleGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#ffffff" />
+                                <stop offset="50%" stop-color="#e2e8f0" />
+                                <stop offset="100%" stop-color="#94a3b8" />
+                            </linearGradient>
+
+                            <!-- Cochlea Pink/Magenta Gradient -->
+                            <linearGradient id="cochleaGrad3D" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#f472b6" />
+                                <stop offset="50%" stop-color="#db2777" />
+                                <stop offset="100%" stop-color="#831843" />
+                            </linearGradient>
+
+                            <!-- Semicircular Canals Gold Gradient -->
+                            <linearGradient id="canalGold" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#fef08a" />
+                                <stop offset="50%" stop-color="#eab308" />
+                                <stop offset="100%" stop-color="#854d0e" />
+                            </linearGradient>
+
+                            <!-- Nerve Blue Gradient -->
+                            <linearGradient id="nerveGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#7dd3fc" />
+                                <stop offset="100%" stop-color="#0284c7" />
+                            </linearGradient>
+                        </defs>
+
+                        <!-- Background Atmosphere -->
+                        <rect width="1000" height="500" fill="#040711" rx="12"/>
+
+                        <!-- TEMPORAL BONE (Tengkorak / Tulang Pelipis) -->
+                        <path d="M 280,30 L 280,180 Q 290,210 320,210 L 320,270 Q 290,270 280,300 L 280,470 L 880,470 Q 940,470 940,300 L 940,30 Z" 
+                              fill="url(#temporalBone)" opacity="0.2" stroke="#475569" stroke-width="2" stroke-dasharray="6 4"/>
+                        <text x="500" y="55" fill="#64748b" font-size="12" font-weight="bold" letter-spacing="2">TULANG TEMPORAL (SKULL BONE)</text>
+
+                        <!-- EUSTACHIAN TUBE -->
+                        <path d="M 390,285 L 430,440 L 460,440 L 415,285 Z" fill="#33191c" opacity="0.8" stroke="#522227" stroke-width="2"/>
+                        <text x="445" y="420" fill="#94a3b8" font-size="11" font-weight="medium">Saluran Eustachius</text>
+
+                        <!-- 1. TELINGA LUAR: PINNA -->
+                        <g id="part-pinna" class="ear-part" data-part="pinna">
+                            <!-- Outer Helix -->
+                            <path d="M 170,45 C 70,45 35,135 35,230 C 35,340 65,425 125,470 C 165,500 200,455 195,415 C 190,375 160,355 160,310 C 160,265 190,230 190,175 C 190,115 205,45 170,45 Z" 
+                                  fill="url(#skinOuter)" stroke="#9e3a20" stroke-width="3.5" />
+                            <!-- Inner Folds (Antihelix & Concha Shadow) -->
+                            <path d="M 145,80 C 90,80 70,150 70,230 C 70,315 95,385 135,425 C 150,440 165,425 155,400 C 125,355 105,290 105,220 C 105,155 125,110 150,95 Z" 
+                                  fill="url(#skinShadow)" opacity="0.9"/>
+                            <path d="M 160,145 C 130,155 120,200 120,245 C 120,290 145,310 145,335" 
+                                  fill="none" stroke="#7a2b16" stroke-width="5" stroke-linecap="round"/>
+                            <!-- Tragus -->
+                            <path d="M 185,220 C 160,225 155,255 185,260 C 190,245 190,230 185,220 Z" fill="#e07a5f" stroke="#9e3a20" stroke-width="2"/>
+                            
+                            <!-- Label Line -->
+                            <polyline points="90,390 40,410 40,440" fill="none" stroke="#fbbf24" stroke-width="1.5"/>
+                            <circle cx="90" cy="390" r="4" fill="#fbbf24"/>
+                            <text x="15" y="460" fill="#fbbf24" font-size="12" font-weight="bold">1. Daun Telinga (Pinna)</text>
+                        </g>
+
+                        <!-- 2. SALURAN TELINGA (EAR CANAL) -->
+                        <g id="part-canal" class="ear-part" data-part="canal">
+                            <path d="M 185,220 Q 240,230 325,230 L 325,270 Q 240,270 185,260 Z" 
+                                  fill="url(#canalBg)" stroke="#522227" stroke-width="2.5"/>
+                            <!-- Acoustic Wave lines inside canal -->
+                            <path d="M 210,232 Q 215,245 210,258 M 240,233 Q 245,247 240,262 M 270,233 Q 275,248 270,265" 
+                                  fill="none" stroke="#06b6d4" stroke-width="2" opacity="0.6" stroke-dasharray="3 3"/>
+                            
+                            <!-- Label Line -->
+                            <polyline points="255,250 255,320 210,340" fill="none" stroke="#fbbf24" stroke-width="1.5"/>
+                            <circle cx="255" cy="250" r="4" fill="#fbbf24"/>
+                            <text x="130" y="355" fill="#fbbf24" font-size="12" font-weight="bold">2. Saluran Telinga</text>
+                        </g>
+
+                        <!-- 3. MEMBRAN TIMPANI (GENDANG TELINGA) -->
+                        <g id="part-eardrum" class="ear-part" data-part="eardrum">
+                            <ellipse cx="328" cy="250" rx="7" ry="28" fill="#06b6d4" fill-opacity="0.4" stroke="#38bdf8" stroke-width="3"/>
+                            <line x1="328" y1="222" x2="328" y2="278" stroke="#e0f2fe" stroke-width="1.5" stroke-dasharray="2 2"/>
+                            
+                            <!-- Label Line -->
+                            <polyline points="328,225 328,150 270,130" fill="none" stroke="#06b6d4" stroke-width="1.5"/>
+                            <circle cx="328" cy="225" r="4" fill="#06b6d4"/>
+                            <text x="140" y="125" fill="#06b6d4" font-size="12" font-weight="bold">3. Gendang Telinga (Membran Timpani)</text>
+                        </g>
+
+                        <!-- 4. TULANG PENDENGARAN (OSSICLES 3D LOOK) -->
+                        <g id="part-ossicles" class="ear-part" data-part="ossicles">
+                            <!-- Malleus (Martil) -->
+                            <path d="M 328,250 L 355,215 Q 365,205 370,218 L 358,238 Z" 
+                                  fill="url(#ossicleGrad)" stroke="#475569" stroke-width="2"/>
+                            <!-- Incus (Landasan) -->
+                            <path d="M 365,212 L 398,218 L 392,250 L 375,235 Z" 
+                                  fill="url(#ossicleGrad)" stroke="#475569" stroke-width="2"/>
+                            <!-- Stapes (Sanggurdi) -->
+                            <path d="M 392,246 L 422,240 L 422,256 L 392,250 Z M 422,238 L 422,258 L 430,258 L 430,238 Z" 
+                                  fill="url(#ossicleGrad)" stroke="#0284c7" stroke-width="2"/>
+
+                            <!-- Label Line -->
+                            <polyline points="370,210 370,100 420,80" fill="none" stroke="#38bdf8" stroke-width="1.5"/>
+                            <circle cx="370" cy="210" r="4" fill="#38bdf8"/>
+                            <text x="430" y="75" fill="#38bdf8" font-size="12" font-weight="bold">4. Tulang Pendengaran</text>
+                            <text x="430" y="92" fill="#94a3b8" font-size="10">(Martil, Landasan, Sanggurdi)</text>
+                        </g>
+
+                        <!-- 5. SALURAN SETENGAH LINGKARAN (SEMICIRCULAR CANALS) -->
+                        <g id="part-balance" class="ear-part" data-part="balance">
+                            <!-- Superior Canal -->
+                            <path d="M 460,195 C 440,120 500,110 520,170" fill="none" stroke="url(#canalGold)" stroke-width="11" stroke-linecap="round"/>
+                            <!-- Posterior Canal -->
+                            <path d="M 505,175 C 560,165 570,230 510,230" fill="none" stroke="url(#canalGold)" stroke-width="11" stroke-linecap="round"/>
+                            <!-- Horizontal Canal -->
+                            <path d="M 470,215 C 530,200 540,245 480,240" fill="none" stroke="url(#canalGold)" stroke-width="9" stroke-linecap="round"/>
+                            
+                            <!-- Ampulla Bulges -->
+                            <circle cx="462" cy="195" r="7" fill="#eab308"/>
+                            <circle cx="510" cy="230" r="7" fill="#eab308"/>
+
+                            <!-- Label Line -->
+                            <polyline points="515,140 540,110 600,110" fill="none" stroke="#facc15" stroke-width="1.5"/>
+                            <circle cx="515" cy="140" r="4" fill="#facc15"/>
+                            <text x="610" y="114" fill="#facc15" font-size="12" font-weight="bold">5. Saluran Setengah Lingkaran</text>
+                            <text x="610" y="130" fill="#94a3b8" font-size="10">(Organ Keseimbangan / Vestibular)</text>
+                        </g>
+
+                        <!-- 6. KOKLEA / RUMAH SIPUT (COCHLEA REALISTIC SPIRAL) -->
+                        <g id="part-cochlea" class="ear-part" data-part="cochlea">
+                            <!-- Oval Window Base -->
+                            <rect x="428" y="236" width="10" height="24" fill="#ec4899" rx="3"/>
+                            
+                            <!-- Outer Cochlea Shell -->
+                            <path d="M 436,248 
+                                     C 490,200 575,190 625,245 
+                                     C 675,300 645,385 570,400 
+                                     C 490,415 440,335 490,285 
+                                     C 530,245 585,280 565,330 
+                                     C 550,360 515,340 525,315
+                                     C 532,298 550,305 542,318" 
+                                  fill="none" stroke="url(#cochleaGrad3D)" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+                            
+                            <!-- Inner Organ of Corti Stripe -->
+                            <path d="M 440,248 
+                                     C 490,205 570,195 618,245 
+                                     C 665,295 638,375 570,390 
+                                     C 495,405 450,330 495,285 
+                                     C 530,250 575,285 558,330" 
+                                  fill="none" stroke="#fbcfe8" stroke-width="3" opacity="0.8" stroke-dasharray="4 2"/>
+
+                            <!-- Label Line -->
+                            <polyline points="600,340 650,420 720,420" fill="none" stroke="#ec4899" stroke-width="1.5"/>
+                            <circle cx="600" cy="340" r="4" fill="#ec4899"/>
+                            <text x="730" y="424" fill="#ec4899" font-size="12" font-weight="bold">6. Koklea (Rumah Siput)</text>
+                        </g>
+
+                        <!-- 7. SARAF AUDITORI (AUDITORY NERVE FIBERS) -->
+                        <g id="part-nerve" class="ear-part" data-part="nerve">
+                            <!-- Nerve Trunk -->
+                            <path d="M 540,290 C 610,270 700,280 780,310 C 830,330 880,360 920,380" 
+                                  fill="none" stroke="url(#nerveGrad)" stroke-width="14" stroke-linecap="round"/>
+                            <!-- Nerve Fibers (Branches entering Cochlea) -->
+                            <path d="M 510,290 Q 540,285 560,290 M 550,320 Q 570,305 590,300 M 575,360 Q 600,330 620,310" 
+                                  fill="none" stroke="#7dd3fc" stroke-width="3" stroke-linecap="round"/>
+
+                            <!-- Label Line -->
+                            <polyline points="750,305 790,240 830,240" fill="none" stroke="#38bdf8" stroke-width="1.5"/>
+                            <circle cx="750" cy="305" r="4" fill="#38bdf8"/>
+                            <text x="840" y="244" fill="#38bdf8" font-size="12" font-weight="bold">7. Saraf Pendengaran</text>
+                            <text x="840" y="260" fill="#94a3b8" font-size="10">(Saraf Auditori ke Otak)</text>
+                        </g>
+                    </svg>
+                </div>
+            </div>
+
+            <!-- DYNAMIC EDUCATIONAL INFO PANEL -->
+            <div id="infoBox" class="bg-cyber-card border border-cyber-border rounded-2xl p-6 shadow-xl">
+                <div class="flex items-center gap-3 mb-3">
+                    <div id="infoIcon" class="p-2.5 bg-cyan-500/10 text-cyan-400 rounded-xl border border-cyan-500/20">
+                        <i data-lucide="info" class="w-5 h-5"></i>
+                    </div>
+                    <div>
+                        <h3 id="infoTitle" class="text-base font-bold text-slate-100">Klik Bagian Telinga di Atas</h3>
+                        <p id="infoSubtitle" class="text-xs text-slate-400">Pilih salah satu organ pada diagram anatomi di atas untuk melihat penjelasan biologi & fisikanya.</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4 pt-4 border-t border-slate-800">
+                    <div class="bg-slate-950/60 p-4 rounded-xl border border-slate-800/80">
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-cyan-400 mb-1.5 flex items-center gap-1.5">
+                            <i data-lucide="book-open" class="w-3.5 h-3.5"></i> Fungsi Biologi (Anatomi)
+                        </h4>
+                        <p id="bioDesc" class="text-xs text-slate-300 leading-relaxed">
+                            Silakan klik organ pada diagram anatomi di atas untuk menampilkan penjelasan biologi lengkap.
+                        </p>
+                    </div>
+                    <div class="bg-slate-950/60 p-4 rounded-xl border border-slate-800/80">
+                        <h4 class="text-xs font-bold uppercase tracking-wider text-pink-400 mb-1.5 flex items-center gap-1.5">
+                            <i data-lucide="zap" class="w-3.5 h-3.5"></i> Konsep Fisika (Gelombang Bunyi)
+                        </h4>
+                        <p id="physDesc" class="text-xs text-slate-300 leading-relaxed">
+                            Pelajari bagaimana prinsip fisika gelombang mekanik, frekuensi, dan ressonansi berinteraksi dengan organ pendengaran.
+                        </p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="border-t border-cyber-border bg-cyber-card/50 py-4 text-center text-xs text-slate-500">
+        <p>Projek Simulasi Interaktif Pendidikan Fisika & Biologi — Berbasis Web Audio API & Tailwind CSS</p>
+    </footer>
+
+    <!-- JavaScript Simulation Engine -->
+    <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
+        // Educational Database for Ear Parts
+        const earData = {
+            pinna: {
+                title: "Daun Telinga (Pinna)",
+                subtitle: "Bagian Telinga Luar",
+                bio: "Berfungsi untuk mengumpulkan, menangkap, dan memfokuskan gelombang bunyi dari lingkungan sekitar ke dalam saluran telinga.",
+                phys: "Bentuk lekukan daun telinga (heliks dan konka) bertindak sebagai resonator akustik alami yang membantu lokalisasi sumber bunyi (mengetahui arah datangnya suara berdasarkan pantulan)."
+            },
+            canal: {
+                title: "Saluran Telinga (Ear Canal)",
+                subtitle: "Bagian Telinga Luar",
+                bio: "Saluran penghubung antara daun telinga luar dan membran timpani. Dilengkapi kelenjar serumen untuk menghasilkan minyak pelindung.",
+                phys: "Berperan sebagai tabung pipa organa tertutup yang mengalami resonansi akustik, memperkuat gelombang bunyi pada rentang frekuensi suara manusia (sekitar 2000 - 5000 Hz)."
+            },
+            eardrum: {
+                title: "Gendang Telinga (Membran Timpani)",
+                subtitle: "Batas Telinga Luar & Tengah",
+                bio: "Membran tipis elastis yang bergetar ketika gelombang suara menumbuk permukaannya.",
+                phys: "Mengubah energi mekanik gelombang tekanan udara longitudinal menjadi getaran mekanik transversal. Frekuensi getaran gendang telinga persis sama dengan frekuensi sumber bunyi."
+            },
+            ossicles: {
+                title: "Tulang Pendengaran (Martil, Landasan, Sanggurdi)",
+                subtitle: "Bagian Telinga Tengah",
+                bio: "Tiga tulang kecil (malleus, incus, stapes) yang saling bertaut dan meneruskan getaran dari gendang telinga ke jendela oval koklea.",
+                phys: "Berfungsi sebagai sistem tuas mekanik (lever system) yang memperbesar (amplifikasi) tekanan gelombang bunyi sekitar 15-20 kali lipat sebelum masuk ke cairan telinga dalam."
+            },
+            balance: {
+                title: "Saluran Setengah Lingkaran (Semicircular Canals)",
+                subtitle: "Sistem Vestibular (Keseimbangan)",
+                bio: "Tiga saluran berisi cairan endolimfa dan sel rambut sensorik yang mendeteksi posisi kepala dan gerakan rotasi tubuh.",
+                phys: "Meskipun tidak memproses suara, bagian ini bekerja berdasarkan prinsip inersia cairan dan gaya sentrifugal untuk menjaga keseimbangan tubuh."
+            },
+            cochlea: {
+                title: "Koklea (Rumah Siput)",
+                subtitle: "Bagian Telinga Dalam",
+                bio: "Tabung spiral berisi cairan endolimfa dan organ corti yang dipenuhi ribuan sel rambut (hair cells) sensorik pendengaran.",
+                phys: "Berfungsi sebagai spektral analyzer alami (Fourier Transform biologis). Bunyi frekuensi tinggi menggetarkan bagian pangkal koklea, sementara bunyi frekuensi rendah menggetarkan bagian ujung koklea."
+            },
+            nerve: {
+                title: "Saraf Auditori (Saraf Kranial VIII)",
+                subtitle: "Jalur Menuju Otak",
+                bio: "Serabut saraf yang meneruskan impuls elektrik dari sel-sel rambut di koklea langsung menuju pusat pendengaran di korteks serebral otak.",
+                phys: "Mengubah energi bioelektrik saraf menjadi persepsi suara yang dapat disadari dan dimengerti oleh manusia."
+            }
+        };
+
+        // Interactive Click Handler for SVG Parts
+        document.querySelectorAll('.ear-part').forEach(part => {
+            part.addEventListener('click', () => {
+                document.querySelectorAll('.ear-part').forEach(p => p.classList.remove('active'));
+                part.classList.add('active');
+
+                const key = part.getAttribute('data-part');
+                const data = earData[key];
+                if (data) {
+                    document.getElementById('infoTitle').textContent = data.title;
+                    document.getElementById('infoSubtitle').textContent = data.subtitle;
+                    document.getElementById('bioDesc').textContent = data.bio;
+                    document.getElementById('physDesc').textContent = data.phys;
+
+                    document.getElementById('infoBox').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            });
+        });
+
+        // Web Audio API & Oscilloscope Simulation
+        let audioCtx = null;
+        let oscillator = null;
+        let gainNode = null;
+        let analyser = null;
+        let isPlaying = false;
+
+        const btnPlay = document.getElementById('btnPlay');
+        const playIcon = document.getElementById('playIcon');
+        const playBtnText = document.getElementById('playBtnText');
+        const sliderFreq = document.getElementById('sliderFreq');
+        const freqVal = document.getElementById('freqVal');
+        const sliderAmp = document.getElementById('sliderAmp');
+        const ampVal = document.getElementById('ampVal');
+        
+        let currentWaveform = 'sine';
+
+        // Waveform selector buttons
+        document.querySelectorAll('.wave-btn').forEach(btn => {
+            btn.addEventListener('click', () => {
+                document.querySelectorAll('.wave-btn').forEach(b => {
+                    b.classList.remove('bg-cyan-950/60', 'border-cyan-500/50', 'text-cyan-300');
+                    b.classList.add('bg-slate-800', 'border-slate-700', 'text-slate-200');
+                });
+                btn.classList.remove('bg-slate-800', 'border-slate-700', 'text-slate-200');
+                btn.classList.add('bg-cyan-950/60', 'border-cyan-500/50', 'text-cyan-300');
+                
+                currentWaveform = btn.getAttribute('data-wave');
+                if (oscillator) {
+                    oscillator.type = currentWaveform;
+                }
+            });
+        });
+
+        // Play / Stop Sound
+        btnPlay.addEventListener('click', () => {
+            if (!isPlaying) {
+                audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                
+                oscillator = audioCtx.createOscillator();
+                gainNode = audioCtx.createGain();
+                analyser = audioCtx.createAnalyser();
+
+                oscillator.type = currentWaveform;
+                oscillator.frequency.setValueAtTime(parseFloat(sliderFreq.value), audioCtx.currentTime);
+                
+                const vol = parseFloat(sliderAmp.value) / 100;
+                gainNode.gain.setValueAtTime(vol * 0.3, audioCtx.currentTime);
+
+                analyser.fftSize = 2048;
+
+                oscillator.connect(gainNode);
+                gainNode.connect(analyser);
+                analyser.connect(audioCtx.destination);
+
+                oscillator.start();
+                isPlaying = true;
+
+                playIcon.setAttribute('data-lucide', 'square');
+                playBtnText.textContent = 'Hentikan Suara';
+                btnPlay.classList.replace('from-cyan-500', 'from-pink-500');
+                btnPlay.classList.replace('to-blue-600', 'to-rose-600');
+                lucide.createIcons();
+
+                drawOscilloscope();
+            } else {
+                if (oscillator) {
+                    oscillator.stop();
+                    oscillator.disconnect();
+                }
+                if (audioCtx) {
+                    audioCtx.close();
+                }
+                isPlaying = false;
+
+                playIcon.setAttribute('data-lucide', 'play');
+                playBtnText.textContent = 'Mulai Suara';
+                btnPlay.classList.replace('from-pink-500', 'from-cyan-500');
+                btnPlay.classList.replace('to-rose-600', 'to-blue-600');
+                lucide.createIcons();
+            }
+        });
+
+        // Frequency Slider Handler
+        sliderFreq.addEventListener('input', (e) => {
+            const val = e.target.value;
+            freqVal.textContent = val + ' Hz';
+            if (oscillator && audioCtx) {
+                oscillator.frequency.setValueAtTime(parseFloat(val), audioCtx.currentTime);
+            }
+        });
+
+        // Amplitude Slider Handler
+        sliderAmp.addEventListener('input', (e) => {
+            const val = e.target.value;
+            ampVal.textContent = val + '%';
+            if (gainNode && audioCtx) {
+                const vol = parseFloat(val) / 100;
+                gainNode.gain.setValueAtTime(vol * 0.3, audioCtx.currentTime);
+            }
+        });
+
+        // Oscilloscope Canvas Rendering
+        const canvas = document.getElementById('oscilloscope');
+        const canvasCtx = canvas.getContext('2d');
+
+        function drawOscilloscope() {
+            if (!isPlaying) {
+                canvasCtx.fillStyle = '#020617';
+                canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+                canvasCtx.strokeStyle = '#1e293b';
+                canvasCtx.lineWidth = 1;
+                canvasCtx.beginPath();
+                canvasCtx.moveTo(0, canvas.height / 2);
+                canvasCtx.lineTo(canvas.width, canvas.height / 2);
+                canvasCtx.stroke();
+                return;
+            }
+
+            requestAnimationFrame(drawOscilloscope);
+
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+
+            const bufferLength = analyser.frequencyBinCount;
+            const dataArray = new Uint8Array(bufferLength);
+            analyser.getByteTimeDomainData(dataArray);
+
+            canvasCtx.fillStyle = '#020617';
+            canvasCtx.fillRect(0, 0, canvas.width, canvas.height);
+
+            canvasCtx.lineWidth = 2;
+            canvasCtx.strokeStyle = '#10b981';
+            canvasCtx.beginPath();
+
+            const sliceWidth = canvas.width * 1.0 / bufferLength;
+            let x = 0;
+
+            for (let i = 0; i < bufferLength; i++) {
+                const v = dataArray[i] / 128.0;
+                const y = v * canvas.height / 2;
+
+                if (i === 0) {
+                    canvasCtx.moveTo(x, y);
+                } else {
+                    canvasCtx.lineTo(x, y);
+                }
+
+                x += sliceWidth;
+            }
+
+            canvasCtx.lineTo(canvas.width, canvas.height / 2);
+            canvasCtx.stroke();
+        }
+
+        // Initial idle draw
+        window.addEventListener('load', () => {
+            canvas.width = canvas.clientWidth;
+            canvas.height = canvas.clientHeight;
+            drawOscilloscope();
+        });
+    </script>
+</body>
+</html>
