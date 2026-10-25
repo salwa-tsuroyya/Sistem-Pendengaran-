@@ -1,25 +1,29 @@
 <!DOCTYPE html>
-<html lang="id" class="dark">
+<html lang="id">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simulasi Interaktif Sistem Pendengaran & Gelombang Bunyi</title>
+    <title>Simulasi Interaktif Anatomi Telinga & Gelombang Bunyi</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
-            darkMode: 'class',
             theme: {
                 extend: {
                     colors: {
-                        cyber: {
-                            bg: '#0a0f1d',
-                            card: '#12192c',
-                            border: '#1e293b',
-                            cyan: '#06b6d4',
-                            magenta: '#ec4899',
-                            yellow: '#eab308',
-                            green: '#10b981'
+                        pastel: {
+                            bg: '#f8fafc',
+                            card: '#ffffff',
+                            border: '#e2e8f0',
+                            pink: '#f472b6',
+                            softpink: '#fce7f3',
+                            blue: '#38bdf8',
+                            softblue: '#e0f2fe',
+                            teal: '#14b8a6',
+                            softteal: '#ccfbf1',
+                            amber: '#f59e0b',
+                            softamber: '#fef3c7',
+                            purple: '#a855f7'
                         }
                     },
                     fontFamily: {
@@ -36,67 +40,69 @@
         
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #0a0f1d;
-            color: #f1f5f9;
+            background-color: #f1f5f9;
+            color: #1e293b;
         }
 
-        /* Custom Scrollbar */
+        /* Custom Soft Scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
             height: 8px;
         }
         ::-webkit-scrollbar-track {
-            background: #0a0f1d;
+            background: #f1f5f9;
         }
         ::-webkit-scrollbar-thumb {
-            background: #1e293b;
+            background: #cbd5e1;
             border-radius: 4px;
         }
         ::-webkit-scrollbar-thumb:hover {
-            background: #334155;
+            background: #94a3b8;
         }
 
         /* SVG Interactive Elements Styling */
-        .ear-part {
+        .ear-organ {
             cursor: pointer;
-            transition: all 0.3s ease;
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .ear-part:hover {
-            filter: drop-shadow(0 0 10px rgba(6, 182, 212, 0.9));
-            opacity: 0.95;
+        .ear-organ:hover {
+            filter: drop-shadow(0 0 10px rgba(14, 165, 233, 0.8)) brightness(1.05);
         }
-        .ear-part.active {
-            filter: drop-shadow(0 0 16px rgba(236, 72, 153, 1));
+        .ear-organ.active {
+            filter: drop-shadow(0 0 14px rgba(236, 72, 153, 0.9)) brightness(1.1);
         }
 
-        @keyframes pulse-glow {
-            0%, 100% { opacity: 0.4; }
-            50% { opacity: 1; }
+        /* Interactive Pin Marker Animation */
+        .pin-marker {
+            cursor: pointer;
+            transition: transform 0.2s ease;
         }
-        .glow-effect {
-            animation: pulse-glow 1.5s infinite;
+        .pin-marker:hover {
+            transform: scale(1.15);
         }
     </style>
 </head>
-<body class="min-h-screen flex flex-col justify-between antialiased selection:bg-cyan-500 selection:text-black">
+<body class="min-h-screen flex flex-col justify-between antialiased selection:bg-sky-200 selection:text-sky-900">
 
     <!-- Header Section -->
-    <header class="border-b border-cyber-border bg-cyber-card/80 backdrop-blur sticky top-0 z-50">
+    <header class="border-b border-slate-200 bg-white/90 backdrop-blur sticky top-0 z-50 shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-3 flex flex-wrap justify-between items-center gap-4">
             <div class="flex items-center gap-3">
-                <div class="p-2.5 bg-gradient-to-tr from-cyan-500 to-blue-600 rounded-xl shadow-lg shadow-cyan-500/20">
-                    <i data-lucide="activity" class="w-6 h-6 text-white"></i>
+                <div class="p-2.5 bg-gradient-to-tr from-sky-400 to-teal-400 rounded-xl shadow-md text-white">
+                    <i data-lucide="activity" class="w-6 h-6"></i>
                 </div>
                 <div>
-                    <h1 class="text-xl font-bold bg-gradient-to-r from-cyan-400 via-sky-300 to-pink-400 bg-clip-text text-transparent">
-                        Simulasi Sistem Pendengaran & Gelombang Bunyi
+                    <h1 class="text-xl font-bold bg-gradient-to-r from-sky-600 via-teal-600 to-pink-600 bg-clip-text text-transparent">
+                        Simulasi Anatomi Telinga & Gelombang Bunyi
                     </h1>
-                    <p class="text-xs text-slate-400">Media Pembelajaran Interaktif Biologi & Fisika — Anatomi Telinga & Gelombang Auditori</p>
+                    <p class="text-xs text-slate-500 font-medium">Media Pembelajaran Interaktif Biologi Auditori & Fisika Gelombang</p>
                 </div>
             </div>
-            <div class="flex items-center gap-2 text-xs bg-slate-900/80 px-3 py-1.5 rounded-lg border border-slate-800 text-slate-300">
-                <span class="w-2 h-2 rounded-full bg-emerald-500 animate-ping"></span>
-                <span>Web Audio API Ready</span>
+            <div class="flex items-center gap-3">
+                <div class="flex items-center gap-2 text-xs bg-emerald-50 text-emerald-700 px-3 py-1.5 rounded-full border border-emerald-200 font-medium shadow-sm">
+                    <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-ping"></span>
+                    <span>Web Audio API Ready</span>
+                </div>
             </div>
         </div>
     </header>
@@ -104,16 +110,16 @@
     <!-- Main Content Container -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 w-full flex-1 grid grid-cols-1 lg:grid-cols-12 gap-6">
 
-        <!-- LEFT COLUMN: Control Panel & Oscilloscope (4 Cols) -->
+        <!-- LEFT COLUMN: Audio Generator Controls & Oscilloscope (4 Cols) -->
         <div class="lg:col-span-4 flex flex-col gap-6">
             
-            <!-- Audio Generator Controls -->
-            <div class="bg-cyber-card border border-cyber-border rounded-2xl p-5 shadow-xl">
-                <div class="flex items-center justify-between mb-4 border-b border-slate-800 pb-3">
-                    <h2 class="font-semibold text-slate-200 flex items-center gap-2 text-sm uppercase tracking-wider">
-                        <i data-lucide="sliders" class="w-4 h-4 text-cyan-400"></i> Generator Gelombang
+            <!-- Audio Generator Controls Card -->
+            <div class="bg-white border border-slate-200 rounded-2xl p-5 shadow-sm hover:shadow-md transition">
+                <div class="flex items-center justify-between mb-4 border-b border-slate-100 pb-3">
+                    <h2 class="font-bold text-slate-800 flex items-center gap-2 text-sm tracking-wide uppercase">
+                        <i data-lucide="sliders" class="w-4 h-4 text-sky-500"></i> Generator Suara
                     </h2>
-                    <button id="btnPlay" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-bold rounded-xl transition shadow-lg shadow-cyan-500/20 active:scale-95">
+                    <button id="btnPlay" class="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-sky-500 to-teal-500 hover:from-sky-600 hover:to-teal-600 text-white font-semibold rounded-xl transition shadow-md shadow-sky-200 active:scale-95 text-xs">
                         <i data-lucide="play" class="w-4 h-4 fill-current" id="playIcon"></i>
                         <span id="playBtnText">Mulai Suara</span>
                     </button>
@@ -121,206 +127,29 @@
 
                 <!-- Frequency Slider -->
                 <div class="space-y-2 mb-5">
-                    <div class="flex justify-between text-sm">
-                        <label class="text-slate-300 font-medium flex items-center gap-1.5">
-                            <i data-lucide="radio" class="w-4 h-4 text-cyan-400"></i> Frekuensi (Pitch / Nada)
+                    <div class="flex justify-between text-xs font-semibold">
+                        <label class="text-slate-700 flex items-center gap-1.5">
+                            <i data-lucide="radio" class="w-4 h-4 text-sky-500"></i> Frekuensi (Pitch / Nada)
                         </label>
-                        <span id="freqVal" class="font-mono font-bold text-cyan-400 text-base">440 Hz</span>
+                        <span id="freqVal" class="font-mono text-sky-600 text-sm bg-sky-50 px-2 py-0.5 rounded border border-sky-200">440 Hz</span>
                     </div>
                     <input type="range" id="sliderFreq" min="100" max="4000" value="440" step="1" 
-                           class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-cyan-400">
-                    <div class="flex justify-between text-[10px] text-slate-500 font-mono">
-                        <span>100 Hz (Rendah)</span>
+                           class="w-full h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-sky-500 border border-slate-200">
+                    <div class="flex justify-between text-[10px] text-slate-400 font-medium">
+                        <span>100 Hz (Bass)</span>
                         <span>1000 Hz</span>
-                        <span>4000 Hz (Tinggi)</span>
+                        <span>4000 Hz (Treble)</span>
                     </div>
                 </div>
 
                 <!-- Amplitude / Volume Slider -->
                 <div class="space-y-2 mb-5">
-                    <div class="flex justify-between text-sm">
-                        <label class="text-slate-300 font-medium flex items-center gap-1.5">
-                            <i data-lucide="volume-2" class="w-4 h-4 text-pink-400"></i> Amplitudo (Volume)
+                    <div class="flex justify-between text-xs font-semibold">
+                        <label class="text-slate-700 flex items-center gap-1.5">
+                            <i data-lucide="volume-2" class="w-4 h-4 text-pink-500"></i> Amplitudo (Volume)
                         </label>
-                        <span id="ampVal" class="font-mono font-bold text-pink-400 text-base">50%</span>
+                        <span id="ampVal" class="font-mono text-pink-600 text-sm bg-pink-50 px-2 py-0.5 rounded border border-pink-200">50%</span>
                     </div>
                     <input type="range" id="sliderAmp" min="0" max="100" value="50" step="1" 
-                           class="w-full h-2 bg-slate-800 rounded-lg appearance-none cursor-pointer accent-pink-500">
-                    <div class="flex justify-between text-[10px] text-slate-500 font-mono">
-                        <span>0% (Hening)</span>
-                        <span>50%</span>
-                        <span>100% (Nyaring)</span>
-                    </div>
-                </div>
-
-                <!-- Waveform Selector -->
-                <div class="space-y-2">
-                    <label class="text-slate-300 font-medium text-xs uppercase tracking-wider block mb-1">
-                        Bentuk Gelombang (Timbre)
-                    </label>
-                    <div class="grid grid-cols-2 gap-2">
-                        <button data-wave="sine" class="wave-btn active flex items-center justify-center gap-2 py-2 px-3 bg-cyan-950/60 hover:bg-slate-700 border border-cyan-500/50 rounded-xl text-xs font-medium text-cyan-300 transition">
-                            <i data-lucide="waves" class="w-3.5 h-3.5"></i> Sinus
-                        </button>
-                        <button data-wave="triangle" class="wave-btn flex items-center justify-center gap-2 py-2 px-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl text-xs font-medium text-slate-200 transition">
-                            <i data-lucide="triangle" class="w-3.5 h-3.5 text-pink-400"></i> Segitiga
-                        </button>
-                        <button data-wave="square" class="wave-btn flex items-center justify-center gap-2 py-2 px-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl text-xs font-medium text-slate-200 transition">
-                            <i data-lucide="square" class="w-3.5 h-3.5 text-yellow-400"></i> Kotak
-                        </button>
-                        <button data-wave="sawtooth" class="wave-btn flex items-center justify-center gap-2 py-2 px-3 bg-slate-800 hover:bg-slate-700 border border-slate-700 rounded-xl text-xs font-medium text-slate-200 transition">
-                            <i data-lucide="activity" class="w-3.5 h-3.5 text-emerald-400"></i> Gergaji
-                        </button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Real-time Oscilloscope Canvas -->
-            <div class="bg-cyber-card border border-cyber-border rounded-2xl p-5 shadow-xl flex flex-col">
-                <div class="flex items-center justify-between mb-3">
-                    <h2 class="font-semibold text-slate-200 flex items-center gap-2 text-sm uppercase tracking-wider">
-                        <i data-lucide="monitor" class="w-4 h-4 text-emerald-400"></i> Osiloskop Sinyal
-                    </h2>
-                    <span class="text-[10px] text-emerald-400 font-mono bg-emerald-950/60 border border-emerald-800/50 px-2 py-0.5 rounded-full">
-                        Live Physics
-                    </span>
-                </div>
-                <div class="relative w-full h-32 bg-slate-950 rounded-xl border border-slate-800 overflow-hidden">
-                    <canvas id="oscilloscope" class="w-full h-full block"></canvas>
-                </div>
-                <p class="text-[11px] text-slate-400 mt-2 italic text-center">
-                    Sumbu Y = Amplitudo (Kenyaringan) | Sumbu X = Panjang Gelombang & Frekuensi
-                </p>
-            </div>
-
-        </div>
-
-        <!-- RIGHT COLUMN: Visual Ear Simulation & Detailed Educational Panel (8 Cols) -->
-        <div class="lg:col-span-8 flex flex-col gap-6">
-
-            <!-- Ear Visual Container (Interactive SVG) -->
-            <div class="bg-cyber-card border border-cyber-border rounded-2xl p-5 shadow-xl flex flex-col relative overflow-hidden">
-                <div class="flex flex-wrap justify-between items-center mb-3 gap-2">
-                    <div>
-                        <h2 class="font-bold text-slate-100 text-lg flex items-center gap-2">
-                            <i data-lucide="ear" class="w-5 h-5 text-cyan-400"></i> Anatomi Telinga Manusia 3D/2D Interaktif
-                        </h2>
-                        <p class="text-xs text-slate-400">Klik bagian organ telinga di bawah untuk melihat fungsi anatomi dan prinsip fisikanya</p>
-                    </div>
-                    <div class="flex gap-2 text-[10px]">
-                        <span class="px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20">Telinga Luar</span>
-                        <span class="px-2 py-0.5 rounded bg-cyan-500/10 text-cyan-400 border border-cyan-500/20">Telinga Tengah</span>
-                        <span class="px-2 py-0.5 rounded bg-pink-500/10 text-pink-400 border border-pink-500/20">Telinga Dalam</span>
-                    </div>
-                </div>
-
-                <!-- Detailed SVG Canvas for Ear Anatomy -->
-                <div class="w-full bg-slate-950/90 rounded-xl border border-slate-800 p-2 overflow-x-auto flex justify-center">
-                    <svg id="earSvg" viewBox="0 0 950 460" class="w-full h-auto min-w-[750px] select-none">
-                        <defs>
-                            <linearGradient id="skinGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#f4a261" />
-                                <stop offset="100%" stop-color="#e76f51" />
-                            </linearGradient>
-                            <linearGradient id="canalGrad" x1="0%" y1="0%" x2="100%" y2="0%">
-                                <stop offset="0%" stop-color="#b56576" />
-                                <stop offset="100%" stop-color="#6d597a" />
-                            </linearGradient>
-                            <linearGradient id="cochleaGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#ec4899" />
-                                <stop offset="100%" stop-color="#831843" />
-                            </linearGradient>
-                            <linearGradient id="boneGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-                                <stop offset="0%" stop-color="#f8fafc" />
-                                <stop offset="100%" stop-color="#94a3b8" />
-                            </linearGradient>
-                            <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-                                <feGaussianBlur stdDeviation="4" result="blur" />
-                                <feComposite in="SourceGraphic" in2="blur" operator="over" />
-                            </filter>
-                        </defs>
-
-                        <!-- Background Atmosphere -->
-                        <rect width="950" height="460" fill="#060913" rx="12"/>
-
-                        <!-- 1. TELINGA LUAR: PINNA (Daun Telinga Detail) -->
-                        <g id="part-pinna" class="ear-part" data-part="pinna">
-                            <!-- Outer Helix -->
-                            <path d="M 130,40 C 45,40 25,125 25,210 C 25,310 50,390 100,435 C 135,465 170,425 165,390 C 160,355 135,335 135,295 C 135,255 160,225 160,175 C 160,120 165,40 130,40 Z" 
-                                  fill="url(#skinGrad)" stroke="#c55331" stroke-width="3.5" />
-                            <!-- Inner Folds / Antihelix & Concha -->
-                            <path d="M 115,70 C 65,70 50,135 50,210 C 50,290 70,355 105,395 C 120,410 135,395 125,375 C 100,335 85,275 85,205 C 85,145 100,100 120,85 Z" 
-                                  fill="#d97a53" opacity="0.85"/>
-                            <path d="M 130,130 C 105,140 100,180 100,220 C 100,260 125,280 125,300" 
-                                  fill="none" stroke="#b04422" stroke-width="4.5" stroke-linecap="round"/>
-                            <!-- Lobulus (Bawah Telinga) -->
-                            <path d="M 100,395 C 75,415 85,445 110,435 Z" fill="#e76f51" stroke="#c55331" stroke-width="2"/>
-                            <text x="65" y="448" fill="#fbbf24" font-size="12" font-weight="bold">1. Daun Telinga (Pinna)</text>
-                        </g>
-
-                        <!-- 2. SALURAN TELINGA (Ear Canal) -->
-                        <g id="part-canal" class="ear-part" data-part="canal">
-                            <path d="M 155,210 C 190,215 240,225 305,225 L 305,265 C 240,265 190,255 155,250 Z" 
-                                  fill="url(#canalGrad)" stroke="#6d3242" stroke-width="2.5"/>
-                            <text x="185" y="285" fill="#fbbf24" font-size="11" font-weight="bold">2. Saluran Telinga</text>
-                        </g>
-
-                        <!-- 3. GENDANG TELINGA (Tympanic Membrane) -->
-                        <g id="part-eardrum" class="ear-part" data-part="eardrum">
-                            <ellipse id="eardrumElem" cx="310" cy="245" rx="6" ry="27" fill="#06b6d4" stroke="#38bdf8" stroke-width="2.5"/>
-                            <text x="255" y="165" fill="#06b6d4" font-size="12" font-weight="bold">3. Membran Timpani</text>
-                            <path d="M 290,170 L 306,230" stroke="#06b6d4" stroke-width="1.5" marker-end="url(#arrow)"/>
-                        </g>
-
-                        <!-- 4. TULANG PENDENGARAN (Ossicles: Malleus, Incus, Stapes) -->
-                        <g id="part-ossicles" class="ear-part" data-part="ossicles">
-                            <g id="ossiclesGroup">
-                                <!-- Malleus (Martil) -->
-                                <path d="M 310,245 L 335,215 L 343,210 C 348,210 353,218 348,225 L 335,235 Z" 
-                                      fill="url(#boneGrad)" stroke="#64748b" stroke-width="1.5"/>
-                                <!-- Incus (Landasan) -->
-                                <path d="M 345,212 L 370,215 L 365,242 L 352,232 Z" 
-                                      fill="url(#boneGrad)" stroke="#64748b" stroke-width="1.5"/>
-                                <!-- Stapes (Sanggurdi) -->
-                                <path d="M 365,240 L 390,237 L 390,250 L 365,247 Z M 390,234 L 390,253 L 398,253 L 398,234 Z" 
-                                      fill="url(#boneGrad)" stroke="#38bdf8" stroke-width="1.5"/>
-                            </g>
-                            <text x="320" y="130" fill="#38bdf8" font-size="12" font-weight="bold">4. Tulang Pendengaran</text>
-                            <text x="320" y="145" fill="#94a3b8" font-size="10">(Martil, Landasan, Sanggurdi)</text>
-                        </g>
-
-                        <!-- 5. SALURAN SETENGAH LINGKARAN (Semicircular Canals - Keseimbangan) -->
-                        <g id="part-balance" class="ear-part" data-part="balance">
-                            <path d="M 440,150 C 400,120 370,150 370,180 C 370,200 390,210 405,195" fill="none" stroke="#eab308" stroke-width="5" stroke-linecap="round"/>
-                            <path d="M 470,170 C 470,130 420,120 400,150" fill="none" stroke="#f59e0b" stroke-width="5" stroke-linecap="round"/>
-                            <path d="M 450,210 C 490,210 500,160 460,150" fill="none" stroke="#d97706" stroke-width="5" stroke-linecap="round"/>
-                            <text x="420,105" fill="#facc15" font-size="11" font-weight="bold">Saluran Keseimbangan</text>
-                        </g>
-
-                        <!-- 6. KOKLEA / RUMAH SIPUT (Cochlea) -->
-                        <g id="part-cochlea" class="ear-part" data-part="cochlea">
-                            <!-- Cochlea Spiral Shell Structure -->
-                            <path d="M 400,245 C 440,210 510,200 550,235 C 590,270 560,340 500,350 C 440,360 410,290 460,265 C 500,245 520,300 480,315 C 460,325 450,300 465,290" 
-                                  fill="none" stroke="url(#cochleaGrad)" stroke-width="12" stroke-linecap="round"/>
-                            <text x="480" y="385" fill="#ec4899" font-size="12" font-weight="bold">6. Koklea (Rumah Siput)</text>
-                        </g>
-
-                        <!-- 7. SARAF AUDITORI (Auditory Nerve to Brain) -->
-                        <g id="part-nerve" class="ear-part" data-part="nerve">
-                            <path d="M 550,320 C 600,340 650,380 720,400" fill="none" stroke="#38bdf8" stroke-width="6" stroke-linecap="round" stroke-dasharray="6 3"/>
-                            <text x="590" y="425" fill="#38bdf8" font-size="11" font-weight="bold">7. Saraf Pendengaran</text>
-                        </g>
-                    </svg>
-                </div>
-            </div>
-
-            <!-- DYNAMIC EDUCATIONAL INFO PANEL -->
-            <div id="infoBox" class="bg-cyber-card border border-cyber-border rounded-2xl p-6 shadow-xl">
-                <div class="flex items-center gap-3 mb-3">
-                    <div id="infoIcon" class="p-2.5 bg-cyan-500/10 text-cyan-400 rounded-xl border border-cyan-500/20">
-                        <i data-lucide="info" class="w-5 h-5"></i>
-                    </div>
-                    <div>
-                        <h3 id="infoTitle" class="text-base font-bold text-slate-100">Pilih Bagian Telinga di Atas</h3>
-                        <p id="infoSubtitle" class="text-xs text-slate-400">Klik salah satu organ pada gambar ilustrasi telinga untuk mempelajari detail anatomi & fisikanya.</p>
-              
+                           class="w-full h-2 bg-slate-100 rounded-lg appearance-none cursor-pointer accent-pink-500 border border-slate-200">
+                    <div class="flex justify-between text-[10px] text-slate-400 font-medium
